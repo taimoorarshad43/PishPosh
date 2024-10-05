@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, db, User, Tweet
-from forms import UserForm, TweetForm
+from models import connect_db
+# from forms import UserForm, TweetForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)

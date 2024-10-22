@@ -29,3 +29,26 @@ class User(db.Model):
     
     firstname = db.Column(db.String(50), nullable = False)
     lastname = db.Column(db.String(50))
+
+    products = db.relationship("Product", cascade = 'all, delete-orphan')
+
+
+class Product(db.Model):
+
+    """Product model with product ID, product name, product description, and user ID as a foreign key"""
+
+
+    __tablename__ = 'products'
+
+    productid = db.Column(db.Integer,
+                          primary_key = True,
+                          autoincrement=True)
+    
+    productname = db.Column(db.String(50),
+                            nullable = False)
+    
+    productdescription = db.Column(db.String,
+                                   nullable = True)
+    
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.id', ondelete = 'cascade'))

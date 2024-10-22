@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, User, db
+from models import db, connect_db, User, Product
 from forms import AddUserForm
 from sqlalchemy.exc import IntegrityError
 
@@ -38,5 +38,13 @@ def signup_page():
         db.session.add(user)
         db.session.commit()
 
-    else:
+    else:                               # Handle our GET requests
         return render_template('signup.html', form = userform)
+    
+
+@app.route('/product/<int:productid>')
+def getproduct(productid):
+
+    product = Product.query.filter_by(productid = productid)
+
+    return render_template('product.html', product=product)

@@ -33,7 +33,7 @@ def signup_page():
         firstname = userform.firstname.data
         lastname = userform.lastname.data
 
-        user = User(username = username, password = password, firstname = firstname, lastname = lastname)
+        user = User.hashpassword(username, password, firstname, lastname)
 
         db.session.add(user)
         db.session.commit()
@@ -45,6 +45,8 @@ def signup_page():
 @app.route('/product/<int:productid>')
 def getproduct(productid):
 
-    product = Product.query.filter_by(productid = productid)
+    product = Product.query.get_or_404(productid)
 
-    return render_template('product.html', product=product)
+    print(product)
+
+    return render_template('productdetail.html', product=product)

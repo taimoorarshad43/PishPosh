@@ -8,6 +8,7 @@
 
 All pages will have a navbar that takes the user to the homepage. They will also allow a user to log in and out as well as sign up.
 
+
 #### Landing Page
 
 This is where the user will land when they first go to the URL.
@@ -16,27 +17,33 @@ This page is mapped to the root URL.
 
 This page will have a navbar that lists different categories of products and will also display products based on the category selected.
 
+
 #### Product Page
 
 The Product page will host a single product listing. It will also list the seller of the product and allow the user to purchase the item.
+
 
 #### Sign Up Page
 
 The sign up page will be where users can make an account (username and password) to use PishPosh. They'll need to enter at their first name and optionally their last name.
 
+
 #### Login Page
 
 The login page will allow returning users to login and make purchases or post listings.
 
+
 #### Cart Page
 
 The cart page will fill up with items the user selected to purchase. This page will update automatically with whatever the user has decided they want to checkout.
+
 
 #### Checkout Page
 
 Here the user will finalize their purchase and enter payment information.
 
 The payment information will be processed through the Stripe Dev API to simulate an actual transaction.
+
 
 #### API Page
 
@@ -67,6 +74,7 @@ GET /v1/products/<productID>
 
 
 
+
 GET /v1/users
 
 **Meaning:** Will get all usernames, their IDs, and their first and last names (last name optional)
@@ -82,6 +90,7 @@ GET /v1/users/<userId>
 **Response:** {"User": {"userID", "username", "firstname", "lastname", "products"}}
 
 **Response Code:** 200
+
 
 
 
@@ -112,6 +121,8 @@ GET /v1/tag/<tagID>
 ### Selling Flow
 
 ![PishPosh User Selling Flow](images/pishposh_selling_flow.png)
+
+
 
 ## Tech Stack
 

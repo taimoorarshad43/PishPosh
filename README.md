@@ -2,6 +2,8 @@
 
 #### Page Overview
 
+
+
 ###### All Pages
 
 All pages will have a navbar that takes the user to the homepage. They will also allow a user to log in and out as well as sign up.
@@ -41,6 +43,8 @@ The payment information will be processed through the Stripe Dev API to simulate
 This page will allow users to make and recieve the results of API calls to the PishPosh API.
 
 This page will make calls to the backend to get the requisite information.
+
+
 
 
 #### API Routes
@@ -96,3 +100,15 @@ GET /v1/tag/<tagID>
 **Response:** {"Tag": {"tagID", "tagname", "products"}}
 
 **Response Code:** 200
+
+
+
+#### User Flows
+
+# Buying Flow
+
+![PishPosh User Buying Flow](images/pishposh_buying_flow.png)
+
+# Selling Flow
+
+![PishPosh User Selling Flow](images/pishposh_selling_flow.png)

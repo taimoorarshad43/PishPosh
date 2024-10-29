@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<h1>{{product.productname}}</h1>
+
+<div class = 'container'>
+    <div class = 'row gx-2 gy-2 text-center'>
+        <div class = 'col-6 bg-primary'>
+            <p>Placeholder Image</p>
+        </div>
+        <div class = 'col-6 bg-success'>
+            <p>
+                {{product.productdescription}}
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+{%endblock%}

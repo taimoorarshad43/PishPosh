@@ -112,3 +112,11 @@ GET /v1/tag/<tagID>
 ### Selling Flow
 
 ![PishPosh User Selling Flow](images/pishposh_selling_flow.png)
+
+## Tech Stack
+
+![PishPosh Tech Stack](images/pishposh_techstack.png)
+
+## Dataflow
+
+![PishPosh Dataflow](images/pishposh_data_diagram.png)

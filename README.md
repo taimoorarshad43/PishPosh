@@ -72,7 +72,7 @@ GET /v1/products/<productID>
 
 **Response Code:** 200
 
-
+<br></br>
 
 
 GET /v1/users
@@ -91,7 +91,7 @@ GET /v1/users/<userId>
 
 **Response Code:** 200
 
-
+<br></br>
 
 
 GET /v1/tags
@@ -110,6 +110,7 @@ GET /v1/tag/<tagID>
 
 **Response Code:** 200
 
+<br></br>
 
 
 ## User Flows
@@ -117,17 +118,21 @@ GET /v1/tag/<tagID>
 ### Buying Flow
 
 ![PishPosh User Buying Flow](images/pishposh_buying_flow.png)
+<br></br>
 
 ### Selling Flow
 
 ![PishPosh User Selling Flow](images/pishposh_selling_flow.png)
+<br></br>
 
 
 
 ## Tech Stack
 
 ![PishPosh Tech Stack](images/pishposh_techstack.png)
+<br></br>
 
 ## Dataflow
 
 ![PishPosh Dataflow](images/pishposh_data_diagram.png)
+<br></br>

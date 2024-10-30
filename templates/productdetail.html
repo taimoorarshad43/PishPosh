@@ -13,6 +13,7 @@
                 {{product.productdescription}}
             </p>
             <btn class = 'add-to-cart btn-primary'>Add to Cart</btn>
+            <btn class = 'remove-from-cart btn-secondary'>Remove to Cart</btn>
         </div>
 
     </div>
@@ -24,8 +25,13 @@
     let productid = {{product.productid|tojson}};
 
     $('.add-to-cart').on("click", function(){
-        // productID = 1 //temp value
         fetch(`/product/${productid}/cart`, 
+            {method: 'POST'}
+        )
+    })
+
+    $('.remove-from-cart').on("click", function(){
+        fetch(`/product/${productid}/remove`, 
             {method: 'POST'}
         )
     })

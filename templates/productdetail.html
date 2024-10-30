@@ -12,10 +12,25 @@
             <p>
                 {{product.productdescription}}
             </p>
+            <btn class = 'add-to-cart btn-primary'>Add to Cart</btn>
         </div>
 
     </div>
 
 </div>
+
+<script>
+
+    let productid = {{product.productid|tojson}};
+
+    $('.add-to-cart').on("click", function(){
+        // productID = 1 //temp value
+        fetch(`/product/${productid}/cart`, 
+            {method: 'POST'}
+        )
+    })
+</script>
+
+<!-- To pass the value from Jinja to JS, we can encode a datavalue to the HTML and use that in the jQuery lookup -->
 
 {%endblock%}

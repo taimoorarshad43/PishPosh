@@ -65,3 +65,18 @@ def addtocart(productid):
         session['cart'] = [productid]
 
     return redirect(f'/product/{productid}')
+
+
+@app.route('/product/<int:productid>/remove', methods = ['POST'])
+def removefromcart(productid):
+
+    print("Removing from cart endpoint triggered")
+
+    try:                                    # If theres nothing to remove from the cart, then we don't need to do anything
+        products = session['cart']
+        products.pop(productid)
+        session['cart'] = products
+    except:
+        flash('Nothing in Cart', 'warning') # We could optionally implement this.
+
+    return redirect(f'/product/{productid}')

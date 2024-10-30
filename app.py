@@ -50,3 +50,18 @@ def getproduct(productid):
     print(product)
 
     return render_template('productdetail.html', product=product)
+
+
+@app.route('/product/<int:productid>/cart', methods = ['POST'])
+def addtocart(productid):
+
+    print("Endpoint triggered")
+
+    try:                                    # Because we will have nothing in the cart initially, we'll just initialize it in the except block
+        products = session['cart']
+        products.append(productid)
+        session['cart'] = products
+    except:
+        session['cart'] = [productid]
+
+    return redirect(f'/product/{productid}')

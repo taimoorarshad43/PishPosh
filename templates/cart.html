@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+<h1 class = 'ml-3 mt-3'>Your Cart</h1>
+
+<div class = 'container'>
+    <div class = 'row text-center'>
+        <div class = 'col-9'>
+            {% for product in products %}
+                <a href = '/product/{{product.productid}}'>{{product.productname}}</a><br></br>
+            {% endfor %}
+        </div>
+        <div class = 'col-3'>
+                <p>Subtotal</p>
+        </div>
+
+    </div>
+
+</div>
+
+
+{%endblock%}

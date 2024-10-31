@@ -4,16 +4,17 @@
 <h1 class = 'ml-3 mt-3'>{{product.productname}}</h1>
 
 <div class = 'container'>
-    <div class = 'row gx-2 gy-2 text-center'>
+    <div class = 'row text-center'>
         <div class = 'col-6'>
             <img src="../static/consumer_examples/m_wp_66d7bb92b1ef589fe04c31a4.jpg" alt="Product">
         </div>
         <div class = 'col-6'>
-            <p>
+            <h5 class = 'mb-5'>
                 {{product.productdescription}}
-            </p>
+            </h5>
             <btn class = 'add-to-cart btn btn-primary'>Add to Cart</btn>
-            <btn class = 'remove-from-cart btn btn-secondary'>Remove from Cart</btn>
+            <btn class = 'remove-from-cart btn btn-secondary'>Remove from Cart</btn><br></br>
+            <a href = '/checkout' class = 'checkout btn btn-info'>Checkout</a>
         </div>
 
     </div>
@@ -37,6 +38,7 @@
     })
 </script>
 
-<!-- To pass the value from Jinja to JS, we can encode a datavalue to the HTML and use that in the jQuery lookup -->
+<!-- To pass the value from Jinja to JS, we just use the following template
+ value|json in Jinja brackets -->
 
 {%endblock%}

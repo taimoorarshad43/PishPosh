@@ -51,6 +51,7 @@ def getproduct(productid):
 
     return render_template('productdetail.html', product=product)
 
+############################################################## Cart Routes #####################################################################
 
 @app.route('/product/<int:productid>/cart', methods = ['POST'])
 def addtocart(productid):
@@ -74,9 +75,35 @@ def removefromcart(productid):
 
     try:                                    # If theres nothing to remove from the cart, then we don't need to do anything
         products = session['cart']
-        products.pop(productid)
+        products.remove(productid)
         session['cart'] = products
     except:
         flash('Nothing in Cart', 'warning') # We could optionally implement this.
 
     return redirect(f'/product/{productid}')
+
+@app.route('/cart')
+def cart():
+
+    try:
+        productids = session['cart']
+    except:
+        productids = []
+
+    products = []
+
+    for productid in productids:
+        product = Product.query.get(productid)
+
+        products.append(product)
+
+
+    return render_template('cart.html', products = products)
+
+#################################################################################################################################################
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
+
+

@@ -4,6 +4,7 @@ from models import db, connect_db, User, Product
 from forms import AddUserForm
 from sqlalchemy.exc import IntegrityError
 
+
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -47,13 +48,13 @@ def getproduct(productid):
 
     product = Product.query.get_or_404(productid)
 
-    print(product)
+    # print(product)
 
     return render_template('productdetail.html', product=product)
 
 ############################################################## Cart Routes #####################################################################
 
-@app.route('/product/<int:productid>/cart', methods = ['POST'])
+@app.route('/product/<int:productid>/addtocart', methods = ['POST'])
 def addtocart(productid):
 
     print("Endpoint triggered")
@@ -65,10 +66,12 @@ def addtocart(productid):
     except:
         session['cart'] = [productid]
 
+    flash('Added to Cart!', 'btn-success')
+
     return redirect(f'/product/{productid}')
 
 
-@app.route('/product/<int:productid>/remove', methods = ['POST'])
+@app.route('/product/<int:productid>/removefromcart', methods = ['POST'])
 def removefromcart(productid):
 
     print("Removing from cart endpoint triggered")
@@ -77,8 +80,9 @@ def removefromcart(productid):
         products = session['cart']
         products.remove(productid)
         session['cart'] = products
+        flash('Removed from Cart!', 'btn-success')
     except:
-        flash('Nothing in Cart', 'warning') # We could optionally implement this.
+        flash('Nothing in Cart', 'btn-info')
 
     return redirect(f'/product/{productid}')
 
@@ -97,10 +101,9 @@ def cart():
 
         products.append(product)
 
-
     return render_template('cart.html', products = products)
 
-#################################################################################################################################################
+###################################################################################################################################
 
 @app.route('/checkout')
 def checkout():

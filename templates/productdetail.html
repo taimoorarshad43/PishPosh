@@ -12,8 +12,12 @@
             <h5 class = 'mb-5'>
                 {{product.productdescription}}
             </h5>
-            <btn class = 'add-to-cart btn btn-primary'>Add to Cart</btn>
-            <btn class = 'remove-from-cart btn btn-secondary'>Remove from Cart</btn><br></br>
+            <form action = '/product/{{product.productid}}/addtocart' method = 'POST'>
+                <input type = 'submit' class = 'add-to-cart btn btn-primary' value = "Add to Cart">
+            </form>
+            <form action = '/product/{{product.productid}}/removefromcart' method = 'POST'>
+                <input type = 'submit' class = 'remove-from-cart btn btn-secondary' value = 'Remove From Cart'><br></br>
+            </form>
             <a href = '/checkout' class = 'checkout btn btn-info'>Checkout</a>
         </div>
 
@@ -21,22 +25,24 @@
 
 </div>
 
-<script>
+<!-- <script>
 
-    let productid = {{product.productid|tojson}};
+    // let productid = {{product.productid|tojson}};
 
-    $('.add-to-cart').on("click", function(){
-        fetch(`/product/${productid}/cart`, 
-            {method: 'POST'}
-        )
-    })
+    // $('.add-to-cart').on("click", function(){
+    //     fetch(`/product/${productid}/cart`, 
+    //         {method: 'POST'}
+    //     )
+    //     location.reload();
+    // })
 
-    $('.remove-from-cart').on("click", function(){
-        fetch(`/product/${productid}/remove`, 
-            {method: 'POST'}
-        )
-    })
-</script>
+    // $('.remove-from-cart').on("click", function(){
+    //     fetch(`/product/${productid}/remove`, 
+    //         {method: 'POST'}
+    //     )
+    //     location.reload();
+    // })
+</script> -->
 
 <!-- To pass the value from Jinja to JS, we just use the following template
  value|json in Jinja brackets -->

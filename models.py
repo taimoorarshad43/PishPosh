@@ -72,3 +72,35 @@ class Product(db.Model):
         price = randint(0,100)
 
         self.price = price
+
+class Tag(db.Model):
+
+    """Tagging/Category Model with tag ID, tag name, product name as foreign key"""
+
+    __tablename__ = 'tags'
+
+    tagid = db.Column(db.Integer,
+                      primary_key = True,
+                      autoincrement = True)
+    
+    tagname = db.Column(db.String(50),
+                        nullable = False)
+
+    products = db.relationship('Product',
+                               secondary = 'products_tags',
+                               backref = 'tags')
+    
+
+class ProductTag(db.Model):
+
+    """Join table for Products/Tags with tags.tagid and products.productid as primary composite keys"""
+
+    __tablename__ = 'products_tags'
+
+    tagid = db.Column(db.Integer,
+                      db.ForeignKey('tags.tagid'),
+                         primary_key = True)
+
+    productid = db.Column(db.Integer,
+                          db.ForeignKey('products.productid'),
+                          primary_key = True)

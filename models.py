@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from random import randint
 
 db = SQLAlchemy()
 
@@ -61,6 +62,13 @@ class Product(db.Model):
     
     productdescription = db.Column(db.String,
                                    nullable = True)
+    price = db.Column(db.Integer,
+                      nullable = False)
     
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id', ondelete = 'cascade'))
+
+    def generateprice(self):
+        price = randint(0,100)
+
+        self.price = price

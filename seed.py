@@ -6,10 +6,10 @@ user1 = User(id = 1, username = 'jsmith', firstname = 'John', lastname = 'Smith'
 user2 = User(id = 2, username = 'jstaten', firstname = 'Jason', lastname = 'Staten', passwordhash = 'asdb')
 
 product1 = Product(productname = 'Ralph Lauren Duffle Bag',
-                    productdescription = 'A beautiful Ralph Lauren Duffle Bag in great condition', user_id = 1, price=30)
+                    productdescription = 'A beautiful Ralph Lauren Duffle Bag in great condition', user_id = 1, price=Product.generateprice())
 
 product2 = Product(productname = 'Reach Edition Xbox360', productdescription = 'A mint condition Reach Edition Xbox360 with controllers and batteries'
-                   ,user_id = 2, price=30)
+                   ,user_id = 2, price=Product.generateprice())
 
 
 with app.app_context(): # Need this for Flask 3

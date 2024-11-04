@@ -1,4 +1,20 @@
 {% extends 'base.html' %}
 
 {%block content%}
+
+<div class = 'container'>
+    <div class = 'row text-center'>
+
+        {% for product in products %}
+        <div class = 'col-3'>
+            {% if product.decode_image() %}
+            <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}">
+            {% endif %}        
+        </div>
+        {%endfor%}
+
+    </div>
+
+</div>
+
 {%endblock%}

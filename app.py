@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, flash
+from flask import Flask, render_template, redirect, session, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Product
 from forms import AddUserForm
@@ -21,7 +21,32 @@ toolbar = DebugToolbarExtension(app)
 
 @app.route('/')
 def home_page():
-    return render_template('index.html')
+
+    products = Product.query.limit(10).all() # Get a bunch of products to display on the homepage
+
+    return render_template('index.html', products = products)
+
+@app.route('/upload', methods = ['POST', 'GET'])
+def pictureupload():
+
+    if request.method == 'POST':
+
+        file = request.files['file']
+        productid = request.form['productid']
+        
+        product = Product.query.get(productid)
+
+        product.encode_image(file)
+
+        db.session.add(product)
+        db.session.commit()
+
+        return redirect('/')
+        
+
+    return render_template('upload.html')
+
+############################################################### User Login & Sign Up Routes #######################################################
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup_page():
@@ -41,7 +66,9 @@ def signup_page():
 
     else:                               # Handle our GET requests
         return render_template('signup.html', form = userform)
-    
+
+
+###################################################################################################################################################
 
 @app.route('/product/<int:productid>')
 def getproduct(productid):
@@ -103,10 +130,13 @@ def cart():
 
     return render_template('cart.html', products = products)
 
-###################################################################################################################################
+#######################################################################################################################################
 
 @app.route('/checkout')
 def checkout():
+
+    # TODO: Add Stripe API integration
+
     return render_template('checkout.html')
 
 

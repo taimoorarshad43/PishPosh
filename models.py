@@ -80,12 +80,16 @@ class Product(db.Model):
 
     def encode_image(self, image_data):
         """Encodes image data to binary for storage."""
-        return base64.b64encode(image_data.read())
+        image_data = base64.b64encode(image_data.read())
+
+        self.image = image_data
+
 
     def decode_image(self):
         """Decodes binary image data to base64 for display in HTML."""
         if self.image:
-            return base64.b64encode(self.image).decode('utf-8')
+            return self.image.decode('utf-8')
+
         return None
 
 class Tag(db.Model):

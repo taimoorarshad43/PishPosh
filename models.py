@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from random import randint
+import base64
 
 db = SQLAlchemy()
 
@@ -65,13 +66,27 @@ class Product(db.Model):
     price = db.Column(db.Integer,
                       nullable = False)
     
+    image = db.Column(db.LargeBinary)
+    
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id', ondelete = 'cascade'))
 
-    def generateprice(self):
-        price = randint(0,100)
+    @classmethod
+    def generateprice(cls):
+        """Generate random integer prices from 1 to 100"""
+        price = randint(1,100)
 
-        self.price = price
+        return price
+
+    def encode_image(self, image_data):
+        """Encodes image data to binary for storage."""
+        return base64.b64encode(image_data.read())
+
+    def decode_image(self):
+        """Decodes binary image data to base64 for display in HTML."""
+        if self.image:
+            return base64.b64encode(self.image).decode('utf-8')
+        return None
 
 class Tag(db.Model):
 

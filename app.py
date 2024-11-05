@@ -107,7 +107,7 @@ def removefromcart(productid):
         products = session['cart']
         products.remove(productid)
         session['cart'] = products
-        flash('Removed from Cart!', 'btn-success')
+        flash('Removed from Cart!', 'btn-warning')
     except:
         flash('Nothing in Cart', 'btn-info')
 

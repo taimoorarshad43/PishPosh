@@ -2,13 +2,16 @@
 
 {%block content%}
 
+<h1 class = 'text-center mt-3'>Welcome to PishPosh</h1>
+
 <div class = 'container'>
     <div class = 'row text-center'>
 
         {% for product in products %}
-        <div class = 'col-3'>
+        <div class = 'col-3 mt-5'>
             {% if product.decode_image() %}
-            <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}">
+            <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
+            <a class = 'btn btn-primary' href = '/product/{{product.productid}}'>{{product.productname}}</a>
             {% endif %}        
         </div>
         {%endfor%}

@@ -22,7 +22,7 @@ toolbar = DebugToolbarExtension(app)
 @app.route('/')
 def home_page():
 
-    products = Product.query.limit(10).all() # Get a bunch of products to display on the homepage
+    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage
 
     return render_template('index.html', products = products)
 
@@ -116,19 +116,23 @@ def removefromcart(productid):
 @app.route('/cart')
 def cart():
 
+    # Retrieve all product ids that are in the cart session object.
     try:
         productids = session['cart']
     except:
         productids = []
 
     products = []
+    subtotal = 0
 
+    # Get all product objects and derive other features
     for productid in productids:
         product = Product.query.get(productid)
 
         products.append(product)
+        subtotal += product.price
 
-    return render_template('cart.html', products = products)
+    return render_template('cart.html', products = products, subtotal = subtotal)
 
 #######################################################################################################################################
 

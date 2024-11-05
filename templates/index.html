@@ -11,6 +11,7 @@
         <div class = 'col-3 mt-5'>
             {% if product.decode_image() %}
             <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
+            <!-- <img src="data:image/jpeg;base64,{{ product.image }}" alt="{{ product.name }}"><br></br> -->
             <a class = 'btn btn-primary' href = '/product/{{product.productid}}'>{{product.productname}}</a>
             {% endif %}        
         </div>

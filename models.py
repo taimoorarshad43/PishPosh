@@ -30,8 +30,7 @@ class User(db.Model):
                          unique = True)
 
     passwordhash = db.Column(db.String,
-                             nullable = False,
-                             unique = True)
+                             nullable = False)
     
     firstname = db.Column(db.String(50), nullable = False)
     lastname = db.Column(db.String(50))
@@ -69,7 +68,9 @@ class Product(db.Model):
     image = db.Column(db.LargeBinary)
     
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id', ondelete = 'cascade'))
+                        db.ForeignKey('users.id'
+                                      , ondelete = 'cascade'
+                                      ))
 
     @classmethod
     def generateprice(cls):
@@ -86,7 +87,7 @@ class Product(db.Model):
 
 
     def decode_image(self):
-        """Decodes binary image data to base64 for display in HTML. Returns image or None if no image attribute"""
+        """Decodes binary image data to utf-8 for display in HTML. Returns image or None if no image attribute"""
         if self.image:
             return self.image.decode('utf-8')
 

@@ -1,10 +1,11 @@
-from models import User, Product, db, connect_db
+from models import User, Product, db
 from app import app
-import requests
 from random import randint
 from mistraldescription import getproductdescription, getimages
-import base64
 from time import sleep
+import requests
+import base64
+
 
 
 firstnamesfile = 'firstnames.txt'
@@ -52,6 +53,8 @@ lastnameslist = gen_names('./names/lastnames.txt')
 
 def generateusers(n):
 
+    """Generate list of User objects to be added to the postgresql db."""
+
     users = []
 
     for x in range(n):
@@ -69,6 +72,8 @@ def generateusers(n):
 
 def generateproducts(n):
 
+    """Generate list of Product objects to be added to postgresql db. Uses Mistral AI to generate product titles and descriptions."""
+
     conditions = ['good', 'great', 'ok', 'decent']
     products = []
 
@@ -82,21 +87,22 @@ def generateproducts(n):
                                                                                                    # offsetting user_id by two because we have two existing.
         product = Product(productname = productname, productdescription = productdescription, price = price, image = image, user_id = x+1)
 
-        sleep(2) # to avoid rate limits with minstral's AI
+        sleep(1.35) # to avoid rate limits with minstral's API
         products.append(product)
 
     return products
 
 
+# Generating the users and products and committing to database.
 with app.app_context():
     # db.session.rollback() # in case there's a failure somewhere
     # db.drop_all()
     # db.create_all()
     
-    users = generateusers(10)
+    users = generateusers(1)
     db.session.add_all(users)
     db.session.commit()
 
-    products = generateproducts(10)
+    products = generateproducts(1)
     db.session.add_all(products)
     db.session.commit()

@@ -6,13 +6,13 @@
 
 <div class = 'container'>
     <div class = 'row text-center'>
-        <div class = 'col-9'>
+        <div class = 'col-8'>
             {% for product in products %}
-                <a href = '/product/{{product.productid}}'>{{product.productname}}</a><br></br>
+                <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span> - ${{product.price}}.00</span><br></br>
             {% endfor %}
         </div>
-        <div class = 'col-3'>
-                <p>Subtotal</p>
+        <div class = 'col-4'>
+                <p>Subtotal: ${{subtotal}}.00</p>
         </div>
     </div>
 

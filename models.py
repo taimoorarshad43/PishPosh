@@ -86,7 +86,7 @@ class Product(db.Model):
 
 
     def decode_image(self):
-        """Decodes binary image data to base64 for display in HTML."""
+        """Decodes binary image data to base64 for display in HTML. Returns image or None if no image attribute"""
         if self.image:
             return self.image.decode('utf-8')
 

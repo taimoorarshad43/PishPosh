@@ -12,6 +12,9 @@
             <h5 class = 'mb-5'>
                 {{product.productdescription}}
             </h5>
+            <h6 class = 'mb-5'>
+                Price: ${{product.price}}.00
+            </h6>
             <form action = '/product/{{product.productid}}/addtocart' method = 'POST'>
                 <input type = 'submit' class = 'add-to-cart btn btn-primary' value = "Add to Cart">
             </form>

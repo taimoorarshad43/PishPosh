@@ -3,6 +3,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Product
 from forms import AddUserForm
 from sqlalchemy.exc import IntegrityError
+from stripe_payment import create_payment_intent
+import json
 
 
 app = Flask(__name__)
@@ -139,8 +141,39 @@ def cart():
 @app.route('/checkout')
 def checkout():
 
-    # TODO: Add Stripe API integration
+    # payment_data = request.get_json()
 
-    return render_template('checkout.html')
+    # For debugging purposes - piping fake data until we can get it from /cart
+    payment_data = {"amount" : 100}
+
+    amount = int(payment_data['amount'])
+    intent = create_payment_intent(amount)
+    intent_data = json.loads(intent.get_data().decode('utf-8'))
 
 
+    # Retrieve all product ids that are in the cart session object.
+    try:
+        productids = session['cart']
+    except:
+        productids = []
+
+    products = []
+    subtotal = 0
+
+    # Get all product objects and derive other features
+    for productid in productids:
+        product = Product.query.get(productid)
+
+        products.append(product)
+        subtotal += product.price
+
+    return render_template('checkout.html', client_secret = intent_data['clientSecret'], products = products, subtotal = subtotal)
+
+@app.route('/confirmation')
+def confirmation():
+    return render_template('confirmation.html')
+
+
+if __name__ == '__main__':
+    app.run(ssl_context=("cert.pem", "key.pem"))
+    # app.run(debug = True, ssl_context='adhoc', host='localhost', port=5000)

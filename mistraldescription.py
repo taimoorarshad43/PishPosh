@@ -13,8 +13,6 @@ def getimages():
     # img_data_encoded = base64.b64encode(img_data).decode('utf-8')
     img_data_encoded = base64.b64encode(img_data)
 
-
-    # print(img_data_encoded)
     return img_data_encoded
 
 base64_image = getimages()

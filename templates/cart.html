@@ -2,26 +2,31 @@
 
 {%block content%}
 
-<h1 class = 'ml-3 mt-3'>Your Cart</h1>
+<h1 class = 'ml-3 mt-3'>{{session['userfirstname']}}'s Cart</h1>
 
 <div class = 'container'>
     {% if products %}
-    <div class = 'row text-center'>
-        <div class = 'col-8'>
-            {% for product in products %}
-                <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span> - ${{product.price}}.00</span><br></br>
-            {% endfor %}
+        <div class = 'row text-center'>
+            <div class = 'col-8'>
+                {% for product in products %}
+                    <div class = 'mt-5'>
+                        {% if product.decode_image() %}
+                        <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
+                        <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = 'badge'> ${{product.price}}.00</span><br></br>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class = 'col-4'>
+                    <p>Subtotal: ${{subtotal}}.00</p>
+            </div>
         </div>
-        <div class = 'col-4'>
-                <p>Subtotal: ${{subtotal}}.00</p>
-        </div>
-    </div>
 
-    <div class = 'row text-center'>
-        <div class = 'col-12 mt-5 text-center'>
-            <a href = '/checkout' class = "btn btn-info">Checkout</a>
+        <div class = 'row text-center'>
+            <div class = 'col-12 mt-5 text-center'>
+                <a href = '/checkout' class = "btn btn-info">Checkout</a>
+            </div>
         </div>
-    </div>
 
     {% else %}
         <h4 class = 'display-4 text-center'>Nothing in Cart</h3>

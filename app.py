@@ -78,7 +78,11 @@ def signup():
         user = User.hashpassword(username, password, firstname, lastname)
 
         db.session.add(user)
-        db.session.commit()
+        try:                        # Possible username exists
+            db.session.commit()
+        except IntegrityError:
+            signinform.username.errors.append("Username already taken")
+            return render_template('signup.html', form = signinform) # Return to GET route of signin
 
         session['userid'] = user.id
 
@@ -166,8 +170,6 @@ def deleteproduct(productid):
 @app.route('/product/<int:productid>/addtocart', methods = ['POST'])
 def addtocart(productid):
 
-    print("Endpoint triggered")
-
     try:                                    # Because we will have nothing in the cart initially, we'll just initialize it in the except block
         products = session['cart']
         products.append(productid)
@@ -182,8 +184,6 @@ def addtocart(productid):
 
 @app.route('/product/<int:productid>/removefromcart', methods = ['POST'])
 def removefromcart(productid):
-
-    print("Removing from cart endpoint triggered")
 
     try:                                    # If theres nothing to remove from the cart, then we don't need to do anything
         products = session['cart']

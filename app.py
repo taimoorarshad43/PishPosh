@@ -62,8 +62,6 @@ def userdetail(userid):
 
     return render_template('userdetail.html', user = user)
 
-# TODO: Need to handle users already existing
-
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
 
@@ -78,13 +76,16 @@ def signup():
         user = User.hashpassword(username, password, firstname, lastname)
 
         db.session.add(user)
-        try:                        # Possible username exists
+        try:                        # Possible username is already taken
             db.session.commit()
         except IntegrityError:
             signinform.username.errors.append("Username already taken")
             return render_template('signup.html', form = signinform) # Return to GET route of signin
 
         session['userid'] = user.id
+        session['username'] = user.username
+        session['userfirstname'] = user.firstname
+        session['userlastname']= user.lastname
 
         flash("Sign Up Successful!", 'btn-success')
 
@@ -107,7 +108,14 @@ def login():
 
         if user:                       # With valid user redirect to index and add userid to session object
             session['userid'] = user.id
+            session['username'] = user.username
+            session['userfirstname'] = user.firstname
+            session['userlastname']= user.lastname
+
             return redirect('/')
+        else:
+            loginform.username.errors.append('Incorrect Username/Password combination')
+            return render_template('login.html', form=loginform)
     else:                              # Handles our GET requests
         return render_template('login.html', form = loginform)
     
@@ -117,7 +125,10 @@ def logout():
     # When you log out, remove userid from session and clear cart from session
 
     session.pop('userid', None)
-    session.pop('cart')
+    session.pop('username', None)
+    session.pop('userfirstname', None)
+    session.pop('userlastname', None)
+    session.pop('cart', None)
 
     flash("You are no longer logged in", 'btn-success')
 

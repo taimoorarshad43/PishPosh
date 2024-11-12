@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Product
-from forms import AddUserForm
+from forms import SignUpForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 from stripe_payment import create_payment_intent
 import json
@@ -24,7 +24,7 @@ toolbar = DebugToolbarExtension(app)
 @app.route('/')
 def home_page():
 
-    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage
+    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize which ones to get.
 
     return render_template('index.html', products = products)
 
@@ -33,11 +33,14 @@ def pictureupload():
 
     if request.method == 'POST':
 
+        # Get the productid and image data. TODO: Refactor to have product name or username to lookup product id
+
         file = request.files['file']
         productid = request.form['productid']
         
         product = Product.query.get(productid)
 
+        # Save the file as base64 encoding to its image filed in DB.
         product.encode_image(file)
 
         db.session.add(product)
@@ -48,38 +51,115 @@ def pictureupload():
 
     return render_template('upload.html')
 
-############################################################### User Login & Sign Up Routes #######################################################
+############################################################### User Routes #######################################################
+
+# TODO: User Detail
+
+@app.route('/user/<int:userid>')
+def userdetail(userid):
+
+    user = User.query.get_or_404(userid)
+
+    return render_template('userdetail.html', user = user)
+
+# TODO: Need to handle users already existing
 
 @app.route('/signup', methods = ['GET', 'POST'])
-def signup_page():
+def signup():
 
-    userform = AddUserForm()
+    signinform = SignUpForm()
 
-    if userform.validate_on_submit(): # Handle our POST requests
-        username = userform.username.data
-        password = userform.password.data
-        firstname = userform.firstname.data
-        lastname = userform.lastname.data
+    if signinform.validate_on_submit(): # Handles our POST requests
+        username = signinform.username.data
+        password = signinform.password.data
+        firstname = signinform.firstname.data
+        lastname = signinform.lastname.data
 
         user = User.hashpassword(username, password, firstname, lastname)
 
         db.session.add(user)
         db.session.commit()
 
-    else:                               # Handle our GET requests
-        return render_template('signup.html', form = userform)
+        session['userid'] = user.id
+
+        flash("Sign Up Successful!", 'btn-success')
+
+        return redirect('/')
+
+    else:                              # Handles our GET requests
+        return render_template('signup.html', form = signinform)
+    
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+
+    loginform = LoginForm()
+
+    if loginform.validate_on_submit(): # Handles our POST requests
+
+        username = loginform.username.data
+        password = loginform.password.data
+
+        user = User.authenticate(username, password)
+
+        if user:                       # With valid user redirect to index and add userid to session object
+            session['userid'] = user.id
+            return redirect('/')
+    else:                              # Handles our GET requests
+        return render_template('login.html', form = loginform)
+    
+@app.route('/logout')
+def logout():
+
+    # All this does is pop the userid from the session object
+
+    session.pop('userid', None)
+
+    return redirect('/')
+    
+# TODO: Delete User route - need to test this
+    
+@app.route('/user/<int:userid>/delete')
+def deleteuser(userid):
+
+    User.query.get(userid).delete()
+
+    db.session.commit()
+
+    # Should delete all products associated with user as well
+
+    # Should remove userid from session as well.
+
+    session.pop['username', None]
+
+    return redirect('/')
+
+################################################################################################################################################
 
 
-###################################################################################################################################################
+
+############################################################## Product Routes #####################################################################
 
 @app.route('/product/<int:productid>')
 def getproduct(productid):
 
     product = Product.query.get_or_404(productid)
 
-    # print(product)
-
     return render_template('productdetail.html', product=product)
+
+# TODO: Product delete route - need to test this
+
+@app.route('/product/<int:productid>/delete')
+def deleteproduct(productid):
+
+    Product.query.get(productid).delete()
+
+    db.session.commit()
+
+    return redirect('/')
+
+################################################################################################################################################
+
+
 
 ############################################################## Cart Routes #####################################################################
 
@@ -133,10 +213,16 @@ def cart():
 
         products.append(product)
         subtotal += product.price
+        session['cart_subtotal'] = subtotal
 
     return render_template('cart.html', products = products, subtotal = subtotal)
 
-#######################################################################################################################################
+################################################################################################################################################
+
+
+
+############################################################## Checkout Routes #####################################################################
+
 
 @app.route('/checkout')
 def checkout():
@@ -172,6 +258,9 @@ def checkout():
 @app.route('/confirmation')
 def confirmation():
     return render_template('confirmation.html')
+
+################################################################################################################################################
+
 
 
 if __name__ == '__main__':

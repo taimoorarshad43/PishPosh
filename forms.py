@@ -1,10 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField
+from wtforms import StringField, FloatField, PasswordField
 
-class AddUserForm(FlaskForm):
+class SignUpForm(FlaskForm):
 
-    username = StringField("Login Name (required)")
-    password = StringField("Password (required)")
+    username = StringField("Username (required)")
+    password = PasswordField("Password (required)")
     firstname = StringField("First Name (required)")
     lastname = StringField("Last Name")
 
+class LoginForm(FlaskForm):
+
+    username = StringField("Username (required)")
+    password = PasswordField("Password (required)")

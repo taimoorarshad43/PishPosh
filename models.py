@@ -44,6 +44,16 @@ class User(db.Model):
         hashedpw_utf8 = hashpw.decode('utf8')
 
         return cls(username=username, password=hashedpw_utf8, firstname=firstname, lastname=lastname)
+    
+    @classmethod
+    def authenticate(cls, username, password):
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and bcrypt.check_password_hash(user.passwordhash, password):
+            return user
+        else:
+            return False
 
 
 class Product(db.Model):

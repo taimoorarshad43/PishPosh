@@ -40,6 +40,11 @@ class User(db.Model):
     @classmethod
     def hashpassword(cls, username, password, firstname, lastname):
 
+        """
+        Hashes inputted password and returns user instance with hashedpassword in password field
+
+        """
+
         hashpw = bcrypt.generate_password_hash(password)
         hashedpw_utf8 = hashpw.decode('utf8')
 
@@ -47,6 +52,12 @@ class User(db.Model):
     
     @classmethod
     def authenticate(cls, username, password):
+
+        """
+        Checking if user is in fact there and checking if password matches.
+        
+        Returns user if True and returns False if check fails
+        """
 
         user = User.query.filter_by(username=username).first()
 

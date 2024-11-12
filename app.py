@@ -114,9 +114,12 @@ def login():
 @app.route('/logout')
 def logout():
 
-    # All this does is pop the userid from the session object
+    # When you log out, remove userid from session and clear cart from session
 
     session.pop('userid', None)
+    session.pop('cart')
+
+    flash("You are no longer logged in", 'btn-success')
 
     return redirect('/')
     
@@ -170,16 +173,20 @@ def deleteproduct(productid):
 @app.route('/product/<int:productid>/addtocart', methods = ['POST'])
 def addtocart(productid):
 
-    try:                                    # Because we will have nothing in the cart initially, we'll just initialize it in the except block
-        products = session['cart']
-        products.append(productid)
-        session['cart'] = products
-    except:
-        session['cart'] = [productid]
+    if session['userid']:                   # If user is logged in, then they can add to cart
+        try:                                # Because we will have nothing in the cart initially, we'll just initialize it in the except block
+            products = session['cart']
+            products.append(productid)
+            session['cart'] = products
+        except:
+            session['cart'] = [productid]
 
-    flash('Added to Cart!', 'btn-success')
+        flash('Added to Cart!', 'btn-success')
 
-    return redirect(f'/product/{productid}')
+        return redirect(f'/product/{productid}')
+    else:                                   # If not logged in, they get a message and redirect
+        flash('You need to be logged in!', 'btn-danger')
+        return redirect(f'/product/{productid}')
 
 
 @app.route('/product/<int:productid>/removefromcart', methods = ['POST'])

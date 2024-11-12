@@ -173,7 +173,9 @@ def deleteproduct(productid):
 @app.route('/product/<int:productid>/addtocart', methods = ['POST'])
 def addtocart(productid):
 
-    if session['userid']:                   # If user is logged in, then they can add to cart
+    userid = session.get('userid', None)
+
+    if userid:                   # If user is logged in, then they can add to cart
         try:                                # Because we will have nothing in the cart initially, we'll just initialize it in the except block
             products = session['cart']
             products.append(productid)

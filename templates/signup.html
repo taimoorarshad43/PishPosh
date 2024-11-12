@@ -14,7 +14,7 @@
         {{ field }}
   
         {% for error in field.errors %}
-          {{ error }}
+        {{ error(class_="badge btn-danger") }}
         {% endfor %}
       </p>
   

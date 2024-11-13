@@ -37,6 +37,9 @@ class User(db.Model):
 
     products = db.relationship("Product", cascade = 'all, delete-orphan')
 
+    def fullname(self):
+        return self.firstname + " " + self.lastname
+
     @classmethod
     def hashpassword(cls, username, password, firstname, lastname):
 

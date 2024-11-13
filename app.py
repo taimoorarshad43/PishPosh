@@ -28,17 +28,17 @@ def home_page():
 
     return render_template('index.html', products = products)
 
-@app.route('/upload', methods = ['POST', 'GET'])
-def pictureupload():
+@app.route('/upload/<int:userid>', methods = ['POST'])
+def pictureupload(userid):
 
-    if request.method == 'POST':
-
-        # Get the productid and image data. TODO: Refactor to have product name or username to lookup product id
-
+    try:
         file = request.files['file']
-        productid = request.form['productid']
+        productname = request.form['productname']
+        productdescription = request.form['productdescription']
+        productprice = request.form['productprice']
         
-        product = Product.query.get(productid)
+        # Generate new product and attach it to passed userid
+        product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
 
         # Save the file as base64 encoding to its image filed in DB.
         product.encode_image(file)
@@ -46,10 +46,13 @@ def pictureupload():
         db.session.add(product)
         db.session.commit()
 
-        return redirect('/')
-        
+    except:                                                    # If certain fields are missing, redirect to user detail with flashed message
+        flash('Product Upload failed (check required fields)', 'btn-danger')
+        return redirect(f'/user/{userid}')
 
-    return render_template('upload.html')
+    flash('Product Listed Successfully', 'btn-success')
+    return redirect(f'/user/{userid}')
+        
 
 ############################################################### User Routes ###############################################################
 
@@ -62,11 +65,11 @@ def userdetail(userid):
 
     userproducts = []
 
-    for product in user.products:
+    for product in user.products: # Get all user products to list on page
 
         userproducts.append(product)
 
-    return render_template('userdetail.html', user = user)
+    return render_template('userdetail.html', user = user, products = userproducts)
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -170,16 +173,16 @@ def getproduct(productid):
 
     return render_template('productdetail.html', product=product)
 
-# TODO: Product delete route - need to test this
-
 @app.route('/product/<int:productid>/delete')
 def deleteproduct(productid):
 
-    Product.query.get(productid).delete()
-
+    Product.query.filter_by(productid=productid).delete()
     db.session.commit()
 
-    return redirect('/')
+    userid = session['userid']
+
+    flash('Product Deleted', 'btn-danger')
+    return redirect(f'/user/{userid}')
 
 ################################################################################################################################################
 
@@ -224,7 +227,7 @@ def removefromcart(productid):
 @app.route('/cart')
 def cart():
 
-    # Retrieve all product ids that are in the cart session object.
+    # Retrieve all product ids that are in the cart session object, if any.
     try:
         productids = session['cart']
     except:
@@ -236,6 +239,12 @@ def cart():
     # Get all product objects and derive other features
     for productid in productids:
         product = Product.query.get(productid)
+
+        if product is None:
+            productids = session['cart']
+            productids.remove(productid)
+            session['cart'] = productids
+            continue                        # Go on to next product
 
         products.append(product)
         subtotal += product.price

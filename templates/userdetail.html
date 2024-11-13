@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<h1 class = 'ml-3 mt-3 mb-5'>{{user.firstname}}'s Profile Page</h1>
+
+<div class = 'container'>
+    <div class = 'row text-center'>
+        <div class = 'col-6'>
+            <!-- User's full name -->
+            <h2 class = 'mb-5'>
+                {{user.fullname()}}'s Products
+            </h2>
+            <!-- User's listed products, if any -->
+            {% for product in products %}
+            <div>
+                {% if product.decode_image() %}
+                <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
+                <a class = 'btn btn-primary' href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = "badge ml-3"> Price: ${{product.price}}.00</span>
+                <span class = "badge ml-3"><a href = "/product/{{product.productid}}/delete">Delete?</a></span>
+                {% endif %}        
+            </div>
+            {%endfor%} 
+
+        </div>
+        <!-- Upload new product listing form -->
+        <div class = 'col-6'>
+            <h2 class = 'mb-5'>Add New Product Listing?</h5>
+            <form action = "/upload/{{user.id}}" method="POST" enctype = "multipart/form-data">
+                <label class = "btn-primary mb-3" for = 'upload-file'>Upload Product Image</label><br>
+                <input class = 'upload-file text-center' type="file" name = "file"><br></br>
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Name</label>
+                <input type="text" name = "productname"><br></br>
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Description</label>
+                <input type="text" name = "productdescription"><br></br>
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Price</label>
+                <input type="text" name = "productprice"><br></br>
+                <input class = "btn btn-primary" type="submit" value="Confirm?">
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{%endblock%}

@@ -8,6 +8,11 @@ stripe.api_key = os.environ["STRIPE_TEST_API_KEY"]
 
 def create_payment_intent(amount, currency="usd"):
 
+    """
+    Takes an amount and currency (currently only supports USD) and
+    returns a response object with a client secret to be used in the front end payment processing integration.
+    """
+
     # Convert the dollar amount to cents
     amount = amount * 100
     

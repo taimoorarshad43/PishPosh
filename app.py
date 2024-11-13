@@ -24,7 +24,7 @@ toolbar = DebugToolbarExtension(app)
 @app.route('/')
 def home_page():
 
-    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize which ones to get.
+    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize order of products listed
 
     return render_template('index.html', products = products)
 
@@ -56,8 +56,6 @@ def pictureupload(userid):
 
 ############################################################### User Routes ###############################################################
 
-# TODO: User Detail
-
 @app.route('/user/<int:userid>')
 def userdetail(userid):
 
@@ -85,7 +83,7 @@ def signup():
         user = User.hashpassword(username, password, firstname, lastname)
 
         db.session.add(user)
-        try:                        # Possible username is already taken
+        try:                            # Handles the possibility that the username is already taken
             db.session.commit()
         except IntegrityError:
             signinform.username.errors.append("Username already taken")
@@ -115,7 +113,7 @@ def login():
 
         user = User.authenticate(username, password)
 
-        if user:                       # With valid user redirect to index and add userid to session object
+        if user:                       # With valid user redirect to index and add userid (and other attributes) to session object
             session['userid'] = user.id
             session['username'] = user.username
             session['userfirstname'] = user.firstname
@@ -164,7 +162,7 @@ def deleteuser(userid):
 
 
 
-############################################################## Product Routes #####################################################################
+########################################################### Product Routes #####################################################################
 
 @app.route('/product/<int:productid>')
 def getproduct(productid):
@@ -190,12 +188,41 @@ def deleteproduct(productid):
 
 ############################################################## Cart Routes #####################################################################
 
+@app.route('/cart')
+def cart():
+
+    # Retrieve all product ids that are in the cart session object, if any.
+    try:
+        productids = session['cart']
+    except:
+        productids = []
+
+    products = []
+    subtotal = 0
+
+    # Get all product objects and derive other features
+    for productid in productids:
+        product = Product.query.get(productid)
+
+        if product is None:
+            productids = session['cart']
+            productids.remove(productid)
+            session['cart'] = productids
+            continue                        # Go on to the next product
+
+        products.append(product)
+        subtotal += product.price
+        session['cart_subtotal'] = subtotal
+
+    return render_template('cart.html', products = products, subtotal = subtotal)
+
+
 @app.route('/product/<int:productid>/addtocart', methods = ['POST'])
 def addtocart(productid):
 
     userid = session.get('userid', None)
 
-    if userid:                   # If user is logged in, then they can add to cart
+    if userid:                              # If user is logged in, then they can add to cart
         try:                                # Because we will have nothing in the cart initially, we'll just initialize it in the except block
             products = session['cart']
             products.append(productid)
@@ -224,39 +251,11 @@ def removefromcart(productid):
 
     return redirect(f'/product/{productid}')
 
-@app.route('/cart')
-def cart():
-
-    # Retrieve all product ids that are in the cart session object, if any.
-    try:
-        productids = session['cart']
-    except:
-        productids = []
-
-    products = []
-    subtotal = 0
-
-    # Get all product objects and derive other features
-    for productid in productids:
-        product = Product.query.get(productid)
-
-        if product is None:
-            productids = session['cart']
-            productids.remove(productid)
-            session['cart'] = productids
-            continue                        # Go on to next product
-
-        products.append(product)
-        subtotal += product.price
-        session['cart_subtotal'] = subtotal
-
-    return render_template('cart.html', products = products, subtotal = subtotal)
-
 ################################################################################################################################################
 
 
 
-############################################################## Checkout Routes #####################################################################
+############################################################## Checkout Routes ###################################################################
 
 
 @app.route('/checkout')
@@ -265,7 +264,7 @@ def checkout():
     payment_data = {"amount" : session['cart_subtotal']}
 
     amount = int(payment_data['amount'])
-    intent = create_payment_intent(amount)
+    intent = create_payment_intent(amount)                          # Intent returns a response object
     intent_data = json.loads(intent.get_data().decode('utf-8'))
 
 
@@ -292,6 +291,15 @@ def confirmation():
     return render_template('confirmation.html')
 
 ################################################################################################################################################
+
+
+
+############################################################## API Routes ######################################################################
+# TODO: Add API Routes and responses.
+
+
+################################################################################################################################################
+
 
 
 

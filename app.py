@@ -51,7 +51,7 @@ def pictureupload():
 
     return render_template('upload.html')
 
-############################################################### User Routes #######################################################
+############################################################### User Routes ###############################################################
 
 # TODO: User Detail
 
@@ -59,6 +59,12 @@ def pictureupload():
 def userdetail(userid):
 
     user = User.query.get_or_404(userid)
+
+    userproducts = []
+
+    for product in user.products:
+
+        userproducts.append(product)
 
     return render_template('userdetail.html', user = user)
 
@@ -198,7 +204,7 @@ def addtocart(productid):
 
         return redirect(f'/product/{productid}')
     else:                                   # If not logged in, they get a message and redirect
-        flash('You need to be logged in!', 'btn-danger')
+        flash('Please login to add items to your cart', 'btn-danger')
         return redirect(f'/product/{productid}')
 
 
@@ -211,7 +217,7 @@ def removefromcart(productid):
         session['cart'] = products
         flash('Removed from Cart!', 'btn-warning')
     except:
-        flash('Nothing in Cart', 'btn-info')
+        flash('Not in Cart', 'btn-info')
 
     return redirect(f'/product/{productid}')
 
@@ -247,10 +253,7 @@ def cart():
 @app.route('/checkout')
 def checkout():
 
-    # payment_data = request.get_json()
-
-    # For debugging purposes - piping fake data until we can get it from /cart
-    payment_data = {"amount" : 100}
+    payment_data = {"amount" : session['cart_subtotal']}
 
     amount = int(payment_data['amount'])
     intent = create_payment_intent(amount)

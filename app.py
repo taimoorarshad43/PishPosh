@@ -1,14 +1,21 @@
+import json
+import os
+
 from flask import Flask, render_template, redirect, session, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
+from sqlalchemy.exc import IntegrityError
+from dotenv import load_dotenv
+
+from stripe_payment import create_payment_intent
 from models import db, connect_db, User, Product
 from forms import SignUpForm, LoginForm
-from sqlalchemy.exc import IntegrityError
-from stripe_payment import create_payment_intent
-import json
+
+load_dotenv()                               # Load environmental variables
 
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "seekrat"
@@ -169,6 +176,9 @@ def getproduct(productid):
 
     product = Product.query.get_or_404(productid)
 
+    # to bookmark what product we last visited, so we can redirect back to it
+    session['lastviewedproduct'] = productid
+
     return render_template('productdetail.html', product=product)
 
 @app.route('/product/<int:productid>/delete')
@@ -192,6 +202,14 @@ def deleteproduct(productid):
 
 @app.route('/cart')
 def cart():
+
+    userid = session.get('userid', None)
+
+    if not userid:
+        flash("Please log in to view your cart", "btn-info")
+        productid = session['lastviewedproduct']
+        return redirect(f'/product/{productid}')
+
 
     # Retrieve all product ids that are in the cart session object, if any.
     try:
@@ -311,6 +329,6 @@ def confirmation():
 
 
 
-if __name__ == '__main__':
-    app.run(ssl_context=("cert.pem", "key.pem"))
-    # app.run(debug = True, ssl_context='adhoc', host='localhost', port=5000)
+# if __name__ == '__main__':
+#     app.run(ssl_context=("cert.pem", "key.pem"))
+#     # app.run(debug = True, ssl_context='adhoc', host='localhost', port=5000)

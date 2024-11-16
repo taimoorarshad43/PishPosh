@@ -81,7 +81,7 @@ class Product(db.Model):
                           primary_key = True,
                           autoincrement=True)
     
-    productname = db.Column(db.String(50),
+    productname = db.Column(db.String(200),
                             nullable = False)
     
     productdescription = db.Column(db.String,

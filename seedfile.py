@@ -61,10 +61,10 @@ def generateusers(n):
 
         first = firstnameslist[randint(0,len(firstnameslist)-1)]
         last = lastnameslist[randint(0,len(lastnameslist)-1)]
-        passwordhash = 'abcd'
-        userhandle = first + last
+        password = 'password'
+        userhandle = first.lower() + last.lower()
 
-        user = User(firstname = first, lastname = last, passwordhash = passwordhash, username = userhandle)
+        user = User.hashpassword(firstname = first, lastname = last, password = password, username = userhandle)
 
         users.append(user)
 
@@ -87,7 +87,7 @@ def generateproducts(n):
                                                                                                    # offsetting user_id by two because we have two existing.
         product = Product(productname = productname, productdescription = productdescription, price = price, image = image, user_id = x+1)
 
-        sleep(1.35) # to avoid rate limits with minstral's API
+        sleep(5) # to avoid rate limits with minstral's API
         products.append(product)
 
     return products
@@ -97,12 +97,12 @@ def generateproducts(n):
 with app.app_context():
     # db.session.rollback() # in case there's a failure somewhere
     # db.drop_all()
-    # db.create_all()
+    db.create_all()
     
-    users = generateusers(1)
+    users = generateusers(20)
     db.session.add_all(users)
     db.session.commit()
 
-    products = generateproducts(1)
+    products = generateproducts(20)
     db.session.add_all(products)
     db.session.commit()

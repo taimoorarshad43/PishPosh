@@ -9,6 +9,7 @@ certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
 click==8.1.7
+cryptography==43.0.3
 decorator==5.1.1
 eval_type_backport==0.2.0
 exceptiongroup==1.2.2
@@ -19,6 +20,7 @@ Flask-DebugToolbar==0.16.0
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 greenlet==3.1.1
+gunicorn==23.0.0
 h11==0.14.0
 httpcore==1.0.6
 httpx==0.27.2
@@ -33,6 +35,7 @@ MarkupSafe==2.1.5
 matplotlib-inline==0.1.7
 mistralai==1.1.0
 mypy-extensions==1.0.0
+packaging==24.2
 parso==0.8.4
 pexpect==4.9.0
 pickleshare==0.7.5
@@ -44,7 +47,9 @@ pycparser==2.22
 pydantic==2.9.2
 pydantic_core==2.23.4
 Pygments==2.18.0
+pyOpenSSL==24.2.1
 python-dateutil==2.8.2
+python-dotenv==1.0.1
 requests==2.32.3
 simplegeneric==0.8.1
 six==1.16.0

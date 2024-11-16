@@ -6,8 +6,8 @@ import os
 def getimages():
     # Calling API for random image
     img_url = 'https://picsum.photos/200'
-
-    img_data = requests.get(img_url).content
+                                    # Very temp TODO: Remove and debug
+    img_data = requests.get(img_url, verify=False).content
 
     # Getting the base64 string
     # img_data_encoded = base64.b64encode(img_data).decode('utf-8')

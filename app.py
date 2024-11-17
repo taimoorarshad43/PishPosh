@@ -33,7 +33,28 @@ toolbar = DebugToolbarExtension(app)
 @app.route('/')
 def home_page():
 
-    products = Product.query.limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize order of products listed
+    offset = request.args.get('page', None)                              # We'll set the offset based on whether user selects 'next' or 'previous'
+    pagination = 1
+
+    # Offset will either be "next" or "previous", we'll then increase pagination and use that in our SQLA query
+    if not offset:                                           
+        session['page'] = 1
+        pagination = 1
+    elif offset == 'next':
+        pagination = session.get('page', 1)
+        pagination += 1
+        session['page'] = pagination
+    else:
+        pagination = session.get('page', 1)
+        pagination -= 1
+        session['page'] = pagination
+
+    # .offset().limit().all()
+
+    if pagination < 1:  # To prevent negative pages
+        pagination = 1
+
+    products = Product.query.offset(pagination).limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize order of products listed
 
     return render_template('index.html', products = products)
 
@@ -370,7 +391,7 @@ def getsingleproduct(productid):
     return jsonify(Product=product)
 
 
-def serialize(object, params):
+def serialize(object, params): # Helper function for serializing different SQLA objects
 
     """
     Serializer helper function. All it needs is the object and its respective params to serialize.

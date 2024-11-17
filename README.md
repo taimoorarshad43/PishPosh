@@ -1,5 +1,9 @@
 # PishPosh (an e-commerce site)
 
+PishPosh is modeled after other popular e-commerce sites and is meant to show off what I've been learning as a Software Engineering student. Please enjoy and view the hosted version at this URL.
+
+https://pishposh.onrender.com/
+
 ## Page Overview
 
 

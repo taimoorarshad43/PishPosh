@@ -12,7 +12,7 @@
             </h2>
             <!-- User's listed products, if any -->
             {% for product in products %}
-            <div>
+            <div class = 'mb-5'>
                 {% if product.decode_image() %}
                 <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
                 <a class = 'btn btn-primary' href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = "badge ml-3"> Price: ${{product.price}}.00</span>

@@ -35,7 +35,7 @@ class User(db.Model):
     firstname = db.Column(db.String(50), nullable = False)
     lastname = db.Column(db.String(50))
 
-    products = db.relationship("Product", cascade = 'all, delete-orphan')
+    products = db.relationship("Product", backref = 'user', cascade = 'all, delete-orphan')
 
     def fullname(self):
         return self.firstname + " " + self.lastname

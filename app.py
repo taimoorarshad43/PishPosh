@@ -89,9 +89,22 @@ def pictureupload(userid):
 ############################################################### User Routes ###############################################################
 
 @app.route('/user/<int:userid>')
-def userdetail(userid):
+def profile(userid):
 
     user = User.query.get_or_404(userid)
+
+    userproducts = []
+
+    for product in user.products: # Get all user products to list on page
+
+        userproducts.append(product)
+
+    return render_template('profile.html', user = user, products = userproducts)
+
+@app.route('/userdetail')
+def userdetail():
+
+    user = User.query.get_or_404(session.get('userid', -1))     # Should only be able to get here if you are logged in
 
     userproducts = []
 

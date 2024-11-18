@@ -13,6 +13,9 @@
                 {{product.productdescription}}
             </h5>
             <h6 class = 'mb-5'>
+                <a href = "/user/{{product.user.id}}">By: {{product.user.username}}</a>
+            </h6>
+            <h6 class = 'mb-5'>
                 Price: ${{product.price}}.00
             </h6>
             <form action = '/product/{{product.productid}}/addtocart' method = 'POST'>

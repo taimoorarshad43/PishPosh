@@ -4,6 +4,14 @@ PishPosh is modeled after other popular e-commerce sites and is meant to show of
 
 https://pishposh.onrender.com/
 
+**Future Features**
+
+AI generated descriptions and tagging
+
+Categories and tagging
+
+Better randomized products
+
 ## Page Overview
 
 

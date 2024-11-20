@@ -13,11 +13,11 @@
             <div class = 'mt-5'>
                 {% if product.decode_image() %}
                 <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
-                <p class = 'btn btn-primary'>{{product.productname}}</p><span class = "badge ml-3"> Price: ${{product.price}}.00</span>
+                <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = "badge ml-3"> Price: ${{product.price}}.00</span>
                 {% endif %}        
             </div>
             {%endfor%}
-            <p class = "badge mt-5">Subtotal: ${{subtotal}}.00</p>
+            <p class = "badge badge-pill badge-primary mt-5">Subtotal: ${{subtotal}}.00</p>
         </div>
         <div class = 'col-4'>
             <form id="payment-form" data-secret="{{client_secret}}">

@@ -12,13 +12,13 @@
                     <div class = 'mt-5'>
                         {% if product.decode_image() %}
                         <img src="data:image/jpeg;base64,{{ product.decode_image() }}" alt="{{ product.name }}"><br></br>
-                        <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = 'badge'> ${{product.price}}.00</span><br></br>
+                        <a href = '/product/{{product.productid}}'>{{product.productname}}</a><span class = "badge ml-3"> Price: ${{product.price}}.00</span>
                         {% endif %}
                     </div>
                 {% endfor %}
             </div>
             <div class = 'col-4'>
-                    <p>Subtotal: ${{subtotal}}.00</p>
+                    <p class="badge badge-pill badge-primary">Subtotal: ${{subtotal}}.00</p>
             </div>
         </div>
 

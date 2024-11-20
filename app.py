@@ -104,15 +104,24 @@ def profile(userid):
 @app.route('/userdetail')
 def userdetail():
 
-    user = User.query.get_or_404(session.get('userid', -1))     # Should only be able to get here if you are logged in
+    userid = session.get('userid', None)
 
-    userproducts = []
+    if userid:
 
-    for product in user.products: # Get all user products to list on page
+        user = User.query.get_or_404(session.get('userid', -1))     # Should only be able to get here if you are logged in
 
-        userproducts.append(product)
+        userproducts = []
 
-    return render_template('userdetail.html', user = user, products = userproducts)
+        for product in user.products: # Get all user products to list on page
+
+            userproducts.append(product)
+
+        return render_template('userdetail.html', user = user, products = userproducts)
+    
+    else:
+
+        flash('Please login to view your profile', 'btn-info')
+        return redirect('/')
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():

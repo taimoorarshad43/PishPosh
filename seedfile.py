@@ -11,27 +11,6 @@ import base64
 firstnamesfile = 'firstnames.txt'
 lastnamesfile = 'lastnames.txt'
 
-# user1 = User(id = 1, username = 'jsmith', firstname = 'John', lastname = 'Smith', passwordhash = 'asdf')
-# user2 = User(id = 2, username = 'jstaten', firstname = 'Jason', lastname = 'Staten', passwordhash = 'asdb')
-
-# product1 = Product(productname = 'Ralph Lauren Duffle Bag',
-#                     productdescription = 'A beautiful Ralph Lauren Duffle Bag in great condition', user_id = 1, price=Product.generateprice())
-
-# product2 = Product(productname = 'Reach Edition Xbox360', productdescription = 'A mint condition Reach Edition Xbox360 with controllers and batteries'
-#                    ,user_id = 2, price=Product.generateprice())
-
-
-# with app.app_context(): # Need this for Flask 3
-
-#     db.drop_all() # starting with a fresh slate
-#     db.create_all()
-#     db.session.add(user1)
-#     db.session.add(user2)
-#     db.session.add(product1)
-#     db.session.add(product2)
-
-#     db.session.commit()
-
 def gen_names(filename): 
 
     """Function to take in a file with names and returns a list of names"""
@@ -81,7 +60,7 @@ def generateproducts(n):
 
         image = getimages() # get a base64 binary image to store in to PSQL
 
-        productname = getproductdescription(image.decode('utf-8')) # need to decode it for 
+        productname = getproductdescription(image.decode('utf-8')) # need to decode it for Mistral AI
         productdescription = productname + " which is in " + conditions[randint(0,len(conditions)-1)] + " condition"
         price = Product.generateprice()
                                                                                                    # offsetting user_id by two because we have two existing.
@@ -99,10 +78,10 @@ with app.app_context():
     # db.drop_all()
     db.create_all()
     
-    users = generateusers(20)
+    users = generateusers(5)
     db.session.add_all(users)
     db.session.commit()
 
-    products = generateproducts(20)
+    products = generateproducts(5)
     db.session.add_all(products)
     db.session.commit()

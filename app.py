@@ -1,5 +1,6 @@
 import json
 import os
+import io
 from time import sleep
 
 from flask import Flask, render_template, redirect, session, flash, request, jsonify
@@ -7,6 +8,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
+from PIL import Image
 
 from stripe_payment import create_payment_intent
 from models import db, connect_db, User, Product
@@ -75,13 +77,21 @@ def pictureupload(userid):
         # Generate new product and attach it to passed userid
         product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
 
+        image = Image.open(file)
+        newsize = (200,200) # Resizing the image to be compact
+        image = image.resize(newsize)
+        stream = io.BytesIO()
+        image.save(stream, format = 'JPEG')
+        file = stream.getvalue()
+
         # Save the file as base64 encoding to its image filed in DB.
         product.encode_image(file)
 
         db.session.add(product)
         db.session.commit()
 
-    except:                                                    # If certain fields are missing, redirect to user detail with flashed message
+    except Exception as e:                                          # If certain fields are missing, redirect to user detail with flashed message
+        print(e)
         flash('Product Upload failed (check required fields)', 'btn-danger')
         return redirect(f'/user/{userid}')
 

@@ -105,7 +105,7 @@ class Product(db.Model):
 
     def encode_image(self, image_data):
         """Encodes image data to binary for storage."""
-        image_data = base64.b64encode(image_data.read())
+        image_data = base64.b64encode(image_data)
 
         self.image = image_data
 

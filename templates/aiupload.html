@@ -8,7 +8,7 @@
         <!-- Upload new product listing form -->
         <div class = 'col-12 text-center'>
             <h2 class = 'mt-5 mb-5 text-primary'>Upload a Picture</h5>
-            <form action = "/upload/{{user.id}}/aiconfirm" enctype = "multipart/form-data">
+            <form action = "/upload/{{user.id}}/aiconfirm" method = "POST" enctype = "multipart/form-data">
                 <input class = 'upload-file' type="file" name = "file"><br></br>
                 <input class = "btn btn-primary mt-5" type="submit" value="Confirm?">
             </form>

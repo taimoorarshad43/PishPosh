@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<h1 class = 'text-center ml-3 mt-3 mb-5'>Your Product Description</h1>
+
+<div class = 'container'>
+    <div class = 'row text-center'>
+        <!-- Upload new product listing form -->
+        <div class = 'col-12 text-center'>
+            <img src="data:image/jpeg;base64,{{ image }}" alt="Product Image">
+            <p>{{title}}</p>
+            <P>{{description}}</P>
+        </div>
+    </div>
+</div>
+
+{%endblock%}

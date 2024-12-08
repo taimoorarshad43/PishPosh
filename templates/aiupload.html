@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<h1 class = 'text-center ml-3 mt-3 mb-5'>Use AI to Describe Your Product</h1>
+
+<div class = 'container'>
+    <div class = 'row text-center'>
+        <!-- Upload new product listing form -->
+        <div class = 'col-12 text-center'>
+            <h2 class = 'mt-5 mb-5 text-primary'>Upload a Picture</h5>
+            <form action = "/upload/{{user.id}}/aiconfirm" enctype = "multipart/form-data">
+                <input class = 'upload-file' type="file" name = "file"><br></br>
+                <input class = "btn btn-primary mt-5" type="submit" value="Confirm?">
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{%endblock%}

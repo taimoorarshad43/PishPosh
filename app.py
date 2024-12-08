@@ -1,5 +1,6 @@
 import json
 import os
+from time import sleep
 
 from flask import Flask, render_template, redirect, session, flash, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
@@ -10,14 +11,14 @@ from dotenv import load_dotenv
 from stripe_payment import create_payment_intent
 from models import db, connect_db, User, Product
 from forms import SignUpForm, LoginForm
+from mistraldescription import getproductdescription, encodeimage, decodeimage
 
 load_dotenv()                               # Load environmental variables
 
-
 app = Flask(__name__)
 app.json.sort_keys = False                  # Prevents Flask from sorting keys in API JSON responses.
-# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"                    # Can be used for testing
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "seekrat"
@@ -33,7 +34,7 @@ toolbar = DebugToolbarExtension(app)
 @app.route('/')
 def home_page():
 
-    offset = request.args.get('page', None)                              # We'll set the offset based on whether user selects 'next' or 'previous'
+    offset = request.args.get('page', None)                      # We'll set the offset based on whether user selects 'next' or 'previous'
     pagination = session.get('page', 0)
 
     # Offset will either be "next" or "previous", we'll then increase pagination and use that in our SQLA query
@@ -60,6 +61,8 @@ def home_page():
 
     return render_template('index.html', products = products)
 
+############################################################## Upload Routes #############################################################
+
 @app.route('/upload/<int:userid>', methods = ['POST'])
 def pictureupload(userid):
 
@@ -83,7 +86,40 @@ def pictureupload(userid):
         return redirect(f'/user/{userid}')
 
     flash('Product Listed Successfully', 'btn-success')
-    return redirect(f'/user/{userid}')
+    return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.
+
+@app.route('/upload/<int:userid>/ai')
+def uploadai(userid):
+
+    user = User.query.get_or_404(userid)
+    return render_template('aiupload.html', user=user)
+
+@app.route('/upload/<int:userid>/aiconfirm', methods = ['GET', 'POST'])
+def aiconfirm(userid):
+
+    # TODO: Add better GET routing
+
+    user = User.query.get_or_404(userid)
+
+    if request.method == 'POST': # For when a picture is uploaded from the previous route
+
+        image = request.files['file']
+        title_prompt = "Give me a short title for this picture that is 2-5 words long. This title should describe the picture as a product"
+        description_prompt = "Give me a product description for this picture that is about 6-12 words long."
+
+        img_data = encodeimage(image)
+        img_data_decoded = decodeimage(img_data)
+
+        title = getproductdescription(img_data_decoded, title_prompt)
+        sleep(2) # To avoid Mistral API's rate limit
+        description = getproductdescription(img_data_decoded, description_prompt)
+
+        return render_template('aiconfirm.html', image=img_data_decoded, user=user, title=title, description=description)
+
+    return render_template('aiconfirm.html', user=user)
+
+##########################################################################################################################################
+
         
 
 ############################################################### User Routes ###############################################################
@@ -96,7 +132,6 @@ def profile(userid):
     userproducts = []
 
     for product in user.products: # Get all user products to list on page
-
         userproducts.append(product)
 
     return render_template('profile.html', user = user, products = userproducts)
@@ -109,11 +144,9 @@ def userdetail():
     if userid:
 
         user = User.query.get_or_404(session.get('userid', -1))     # Should only be able to get here if you are logged in
-
         userproducts = []
 
         for product in user.products: # Get all user products to list on page
-
             userproducts.append(product)
 
         return render_template('userdetail.html', user = user, products = userproducts)
@@ -133,6 +166,18 @@ def signup():
         password = signinform.password.data
         firstname = signinform.firstname.data
         lastname = signinform.lastname.data
+
+        ####################### Validation of user input #################################
+        if len(username) < 4:
+            signinform.username.errors.append("Username must be at least 4 characters long")
+            return render_template('signup.html', form = signinform)
+        if len(password) <= 6:
+            signinform.password.errors.append("Password must be at least 6 characters long")
+            return render_template('signup.html', form = signinform)
+        if len(firstname) == 0:
+            signinform.firstname.errors.append("You need to add your first name")
+            return render_template('signup.html', form = signinform)
+        ##################################################################################
 
         user = User.hashpassword(username, password, firstname, lastname)
 
@@ -164,7 +209,6 @@ def login():
 
         username = loginform.username.data
         password = loginform.password.data
-
         user = User.authenticate(username, password)
 
         if user:                       # With valid user redirect to index and add userid (and other attributes) to session object
@@ -201,7 +245,6 @@ def logout():
 def deleteuser(userid):
 
     User.query.get(userid).delete()
-
     db.session.commit()
 
     # Should delete all products associated with user as well
@@ -324,7 +367,6 @@ def removefromcart(productid):
 
 ############################################################## Checkout Routes ###################################################################
 
-
 @app.route('/checkout')
 def checkout():
 
@@ -333,7 +375,6 @@ def checkout():
     amount = int(payment_data['amount'])
     intent = create_payment_intent(amount)                          # Intent returns a response object
     intent_data = json.loads(intent.get_data().decode('utf-8'))
-
 
     # Retrieve all product ids that are in the cart session object.
     try:
@@ -367,8 +408,6 @@ def confirmation():
 
 
 ############################################################## API Routes ######################################################################
-# TODO: Add API Routes and responses.
-
 @app.route('/v1/users')
 def getusers():
 
@@ -385,9 +424,7 @@ def getusers():
 def getsingleuser(userid):
 
     user = User.query.get(userid)
-
     params = ['id', 'username', 'firstname', 'lastname']
-
     user = serialize(user, params)
 
     return jsonify(User=user)
@@ -396,9 +433,7 @@ def getsingleuser(userid):
 def getproducts():
 
     sqlaproducts = Product.query.all()
-
     params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
-
     products = [serialize(product, params) for product in sqlaproducts]
 
     return jsonify(Products=products)
@@ -407,9 +442,7 @@ def getproducts():
 def getsingleproduct(productid):
 
     product = Product.query.get(productid)
-
     params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
-
     product = serialize(product, params)
 
     return jsonify(Product=product)
@@ -423,8 +456,9 @@ def serialize(object, params): # Helper function for serializing different SQLA 
     Takes the object to be serialized as well as the params to serialize it with
     """
 
-    mapper = inspect(object)
+    # TODO: Refactor to allow SQL relationships
 
+    mapper = inspect(object)
     output = {}
 
     for column in mapper.attrs:

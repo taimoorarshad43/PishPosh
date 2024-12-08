@@ -26,8 +26,29 @@ model = "pixtral-12b-2409"
 # Initialize the Mistral client
 client = Mistral(api_key=api_key)
 
+def encodeimage(img_data):
 
-def getproductdescription(image_data):
+    """
+    Helper function to base64 encode and decode for AI processing
+    """
+
+    img_data= base64.b64encode(img_data.read())
+
+    return img_data
+
+def decodeimage(img_data):
+
+    return img_data.decode('utf-8')
+
+
+
+def getproductdescription(image_data, prompt=None):
+
+    # We'll send our own custom message prompt or default to this one
+    if not prompt:
+        message_data = "Give me a short product description for this picture that is a title of 5-12 words."
+
+    message_data = prompt
 
     """Function that takes base64 utf-8 image data and returns an image description from Mistral's AI"""
 
@@ -38,7 +59,7 @@ def getproductdescription(image_data):
             "content": [
                 {
                     "type": "text",
-                    "text": "Give me a short product description for this picture that is a title of 5-12 words."
+                    "text": message_data
                 },
                 {
                     "type": "image_url",

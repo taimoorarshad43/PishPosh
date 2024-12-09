@@ -3,7 +3,7 @@ import os
 import io
 from time import sleep
 
-from flask import Flask, render_template, redirect, session, flash, request, jsonify
+from flask import Flask, render_template, redirect, session, flash, request, jsonify, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
@@ -19,8 +19,8 @@ load_dotenv()                               # Load environmental variables
 
 app = Flask(__name__)
 app.json.sort_keys = False                  # Prevents Flask from sorting keys in API JSON responses.
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"                    # Can be used for testing
-# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"                    # Can be used for testing
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "seekrat"
@@ -68,6 +68,10 @@ def home_page():
 @app.route('/upload/<int:userid>', methods = ['POST'])
 def pictureupload(userid):
 
+    if session.get("userid", None) is None:
+        flash('Please login to upload products', 'btn-info')
+        return redirect('/')
+
     try:
         file = request.files['file']
         productname = request.form['productname']
@@ -81,7 +85,7 @@ def pictureupload(userid):
         newsize = (200,200) # Resizing the image to be compact
         image = image.resize(newsize)
         stream = io.BytesIO()
-        image.save(stream, format = 'JPEG')
+        image.save(stream, format = 'JPEG')         # Save the image as stream of bytes
         file = stream.getvalue()
 
         # Save the file as base64 encoding to its image filed in DB.
@@ -101,32 +105,47 @@ def pictureupload(userid):
 @app.route('/upload/<int:userid>/ai')
 def uploadai(userid):
 
+    if session.get("userid", None) is None:
+        flash('Please login to upload products', 'btn-info')
+        return redirect('/')
+
     user = User.query.get_or_404(userid)
     return render_template('aiupload.html', user=user)
 
-@app.route('/upload/<int:userid>/aiconfirm', methods = ['GET', 'POST'])
+@app.route('/upload/aiprocess', methods = ['POST'])
+def aiprocess():
+
+    image = request.files['file']
+    title_prompt = "Give me a short title for this picture that is 2-5 words long. This title should describe the picture as a product"
+    description_prompt = "Give me a product description for this picture that is about 6-12 words long."
+
+    img_data = encodeimage(image)               # Need both an encoded and decoded image for the HTML and API calls respectively
+    img_data_decoded = decodeimage(img_data)
+
+    title = getproductdescription(img_data_decoded, title_prompt)     # Get both the title and description from Mistral AI
+    sleep(2) # To avoid Mistral API's rate limit
+    description = getproductdescription(img_data_decoded, description_prompt)
+
+    output = {"title" : title,
+              "description" : description}
+
+    return jsonify(output)
+
+
+@app.route('/upload/<int:userid>/aiconfirm')
 def aiconfirm(userid):
 
-    # TODO: Add better GET routing
+    if session.get("userid", None) is None:
+        flash('Please login to upload products', 'btn-info')
+        return redirect('/')
 
     user = User.query.get_or_404(userid)
 
-    if request.method == 'POST': # For when a picture is uploaded from the previous route
+    img_data_decoded = session.get("aiimage", 1)
+    description = session.get("aidesc", 1)
+    title = session.get("aititle", 1)
 
-        image = request.files['file']
-        title_prompt = "Give me a short title for this picture that is 2-5 words long. This title should describe the picture as a product"
-        description_prompt = "Give me a product description for this picture that is about 6-12 words long."
-
-        img_data = encodeimage(image)
-        img_data_decoded = decodeimage(img_data)
-
-        title = getproductdescription(img_data_decoded, title_prompt)
-        sleep(2) # To avoid Mistral API's rate limit
-        description = getproductdescription(img_data_decoded, description_prompt)
-
-        return render_template('aiconfirm.html', image=img_data_decoded, user=user, title=title, description=description)
-
-    return render_template('aiconfirm.html', user=user)
+    return render_template('aiconfirm.html', image=img_data_decoded, user=user, title=title, description=description)
 
 ##########################################################################################################################################
 
@@ -244,6 +263,10 @@ def logout():
     session.pop('userfirstname', None)
     session.pop('userlastname', None)
     session.pop('cart', None)
+
+    # Trying to remove everything from session after logout
+
+    session.clear()
 
     flash("You are no longer logged in", 'btn-success')
 

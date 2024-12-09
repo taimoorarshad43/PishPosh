@@ -8,8 +8,15 @@
         <!-- Upload new product listing form -->
         <div class = 'col-12 text-center'>
             <img src="data:image/jpeg;base64,{{ image }}" alt="Product Image">
-            <p>{{title}}</p>
-            <P>{{description}}</P>
+            <form action = "/upload/{{user.id}}" method = "POST">
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Name</label>
+                <input type="text" name = "productname" value = "{{title}}"><br></br>
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Description</label>
+                <input type="text" name = "productdescription" value = "{{description}}"><br></br>
+                <label class = "btn-primary mb-3" for = 'upload-file'>Product Price</label>
+                <input type="text" name = "productprice"><br></br>
+                <input class = "btn btn-primary" type="submit" value="Confirm?">
+            </form>
         </div>
     </div>
 </div>

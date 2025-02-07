@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
 from models import User, Product
+from sqlalchemy import inspect
+
 
 apiroutes = Blueprint("apiroutes", __name__)
 

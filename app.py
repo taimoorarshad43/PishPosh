@@ -5,7 +5,6 @@ from time import sleep
 
 from flask import Flask, render_template, redirect, session, flash, request, jsonify, url_for
 from flask_debugtoolbar import DebugToolbarExtension
-from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
 from PIL import Image
@@ -14,6 +13,9 @@ from stripe_payment import create_payment_intent
 from models import db, connect_db, User, Product
 from forms import SignUpForm, LoginForm
 from mistraldescription import getproductdescription, encodeimage, decodeimage
+
+# Blueprint dependencies
+from apiroutes import apiroutes, serialize
 
 load_dotenv()                               # Load environmental variables
 
@@ -25,6 +27,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "seekrat"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+app.register_blueprint(apiroutes, url_prefix = "/v1")
 
 
 with app.app_context(): # Need this for Flask 3
@@ -440,65 +444,65 @@ def confirmation():
 
 
 
-############################################################## API Routes ######################################################################
-@app.route('/v1/users')
-def getusers():
+# ############################################################## API Routes ######################################################################
+# @app.route('/v1/users')
+# def getusers():
 
-    # get all users
-    sqlausers = User.query.all()
+#     # get all users
+#     sqlausers = User.query.all()
 
-    params = ['id', 'username', 'firstname', 'lastname']
+#     params = ['id', 'username', 'firstname', 'lastname']
 
-    users = [serialize(sqlauser, params) for sqlauser in sqlausers]
+#     users = [serialize(sqlauser, params) for sqlauser in sqlausers]
 
-    return jsonify(Users=users)
+#     return jsonify(Users=users)
 
-@app.route('/v1/users/<userid>')
-def getsingleuser(userid):
+# @app.route('/v1/users/<userid>')
+# def getsingleuser(userid):
 
-    user = User.query.get(userid)
-    params = ['id', 'username', 'firstname', 'lastname']
-    user = serialize(user, params)
+#     user = User.query.get(userid)
+#     params = ['id', 'username', 'firstname', 'lastname']
+#     user = serialize(user, params)
 
-    return jsonify(User=user)
+#     return jsonify(User=user)
 
-@app.route('/v1/products')
-def getproducts():
+# @app.route('/v1/products')
+# def getproducts():
 
-    sqlaproducts = Product.query.all()
-    params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
-    products = [serialize(product, params) for product in sqlaproducts]
+#     sqlaproducts = Product.query.all()
+#     params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
+#     products = [serialize(product, params) for product in sqlaproducts]
 
-    return jsonify(Products=products)
+#     return jsonify(Products=products)
 
-@app.route('/v1/products/<productid>')
-def getsingleproduct(productid):
+# @app.route('/v1/products/<productid>')
+# def getsingleproduct(productid):
 
-    product = Product.query.get(productid)
-    params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
-    product = serialize(product, params)
+#     product = Product.query.get(productid)
+#     params = ['productid', 'productname', 'productdescription', 'price', 'user_id']
+#     product = serialize(product, params)
 
-    return jsonify(Product=product)
+#     return jsonify(Product=product)
 
 
-def serialize(object, params): # Helper function for serializing different SQLA objects
+# def serialize(object, params): # Helper function for serializing different SQLA objects
 
-    """
-    Serializer helper function. All it needs is the object and its respective params to serialize.
+#     """
+#     Serializer helper function. All it needs is the object and its respective params to serialize.
 
-    Takes the object to be serialized as well as the params to serialize it with
-    """
+#     Takes the object to be serialized as well as the params to serialize it with
+#     """
 
-    # TODO: Refactor to allow SQL relationships
+#     # TODO: Refactor to allow SQL relationships
 
-    mapper = inspect(object)
-    output = {}
+#     mapper = inspect(object)
+#     output = {}
 
-    for column in mapper.attrs:
-        if column.key in params:
-            output[column.key] = getattr(object, column.key)
+#     for column in mapper.attrs:
+#         if column.key in params:
+#             output[column.key] = getattr(object, column.key)
 
-    return output
+#     return output
 
-################################################################################################################################################
+# ################################################################################################################################################
 

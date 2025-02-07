@@ -15,7 +15,7 @@ from forms import SignUpForm, LoginForm
 from mistraldescription import getproductdescription, encodeimage, decodeimage
 
 # Blueprint dependencies
-from apiroutes import apiroutes, serialize
+from apiroutes import apiroutes
 
 load_dotenv()                               # Load environmental variables
 

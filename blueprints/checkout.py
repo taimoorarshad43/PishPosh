@@ -3,9 +3,9 @@ from flask import Blueprint, session, render_template
 from stripe_payment import create_payment_intent
 from models import Product
 
-checkout = Blueprint("checkout", __name__)
+productcheckout = Blueprint("checkout", __name__)
 
-@checkout.route('/checkout')
+@productcheckout.route('/checkout')
 def checkout():
 
     payment_data = {"amount" : session['cart_subtotal']}
@@ -32,7 +32,7 @@ def checkout():
 
     return render_template('checkout.html', client_secret = intent_data['clientSecret'], products = products, subtotal = subtotal)
 
-@checkout.route('/confirmation')
+@productcheckout.route('/confirmation')
 def confirmation():
 
     # Empty cart after a purchase is made.

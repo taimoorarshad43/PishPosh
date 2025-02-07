@@ -17,7 +17,7 @@ def getusers():
 
     return jsonify(Users=users)
 
-@apiroutes.route('/v1/users/<userid>')
+@apiroutes.route('/users/<userid>')
 def getsingleuser(userid):
 
     user = User.query.get(userid)
@@ -26,7 +26,7 @@ def getsingleuser(userid):
 
     return jsonify(User=user)
 
-@apiroutes.route('/v1/products')
+@apiroutes.route('/products')
 def getproducts():
 
     sqlaproducts = Product.query.all()
@@ -35,7 +35,7 @@ def getproducts():
 
     return jsonify(Products=products)
 
-@apiroutes.route('/v1/products/<productid>')
+@apiroutes.route('/products/<productid>')
 def getsingleproduct(productid):
 
     product = Product.query.get(productid)

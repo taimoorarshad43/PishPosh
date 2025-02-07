@@ -16,6 +16,7 @@ from mistraldescription import getproductdescription, encodeimage, decodeimage
 
 # Blueprint dependencies
 from blueprints.apiroutes import apiroutes
+from blueprints.checkout import productcheckout
 
 load_dotenv()                               # Load environmental variables
 
@@ -29,6 +30,7 @@ app.config["SECRET_KEY"] = "seekrat"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 app.register_blueprint(apiroutes, url_prefix = "/v1")
+app.register_blueprint(productcheckout)
 
 
 with app.app_context(): # Need this for Flask 3
@@ -402,42 +404,42 @@ def removefromcart(productid):
 
 
 
-############################################################## Checkout Routes ###################################################################
+# ############################################################## Checkout Routes ###################################################################
 
-@app.route('/checkout')
-def checkout():
+# @app.route('/checkout')
+# def checkout():
 
-    payment_data = {"amount" : session['cart_subtotal']}
+#     payment_data = {"amount" : session['cart_subtotal']}
 
-    amount = int(payment_data['amount'])
-    intent = create_payment_intent(amount)                          # Intent returns a response object
-    intent_data = json.loads(intent.get_data().decode('utf-8'))
+#     amount = int(payment_data['amount'])
+#     intent = create_payment_intent(amount)                          # Intent returns a response object
+#     intent_data = json.loads(intent.get_data().decode('utf-8'))
 
-    # Retrieve all product ids that are in the cart session object.
-    try:
-        productids = session['cart']
-    except:
-        productids = []
+#     # Retrieve all product ids that are in the cart session object.
+#     try:
+#         productids = session['cart']
+#     except:
+#         productids = []
 
-    products = []
-    subtotal = 0
+#     products = []
+#     subtotal = 0
 
-    # Get all product objects and derive other features
-    for productid in productids:
-        product = Product.query.get(productid)
+#     # Get all product objects and derive other features
+#     for productid in productids:
+#         product = Product.query.get(productid)
 
-        products.append(product)
-        subtotal += product.price
+#         products.append(product)
+#         subtotal += product.price
 
-    return render_template('checkout.html', client_secret = intent_data['clientSecret'], products = products, subtotal = subtotal)
+#     return render_template('checkout.html', client_secret = intent_data['clientSecret'], products = products, subtotal = subtotal)
 
-@app.route('/confirmation')
-def confirmation():
+# @app.route('/confirmation')
+# def confirmation():
 
-    # Empty cart after a purchase is made.
+#     # Empty cart after a purchase is made.
 
-    session.pop('cart', None)
+#     session.pop('cart', None)
 
-    return render_template('confirmation.html')
+#     return render_template('confirmation.html')
 
-################################################################################################################################################
+# ################################################################################################################################################

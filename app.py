@@ -18,6 +18,7 @@ from mistraldescription import getproductdescription, encodeimage, decodeimage
 from blueprints.apiroutes import apiroutes
 from blueprints.checkout import productcheckout
 from blueprints.cart import cartroutes
+from blueprints.product import productroutes
 
 load_dotenv()                               # Load environmental variables
 
@@ -33,6 +34,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.register_blueprint(apiroutes, url_prefix = "/v1")
 app.register_blueprint(productcheckout)
 app.register_blueprint(cartroutes)
+app.register_blueprint(productroutes)
 
 
 with app.app_context(): # Need this for Flask 3
@@ -300,106 +302,27 @@ def deleteuser(userid):
 
 
 
-########################################################### Product Routes #####################################################################
+# ########################################################### Product Routes #####################################################################
 
-@app.route('/product/<int:productid>')
-def getproduct(productid):
+# @app.route('/product/<int:productid>')
+# def getproduct(productid):
 
-    product = Product.query.get_or_404(productid)
+#     product = Product.query.get_or_404(productid)
 
-    # to bookmark what product we last visited, so we can redirect back to it
-    session['lastviewedproduct'] = productid
+#     # to bookmark what product we last visited, so we can redirect back to it
+#     session['lastviewedproduct'] = productid
 
-    return render_template('productdetail.html', product=product)
+#     return render_template('productdetail.html', product=product)
 
-@app.route('/product/<int:productid>/delete')
-def deleteproduct(productid):
+# @app.route('/product/<int:productid>/delete')
+# def deleteproduct(productid):
 
-    Product.query.filter_by(productid=productid).delete()
-    db.session.commit()
+#     Product.query.filter_by(productid=productid).delete()
+#     db.session.commit()
 
-    userid = session['userid']
+#     userid = session['userid']
 
-    flash('Product Deleted', 'btn-danger')
-    return redirect(f'/user/{userid}')
-
-################################################################################################################################################
-
-
-
-# ############################################################## Cart Routes #####################################################################
-
-# # TODO: Add quantities to cart
-
-# @app.route('/cart')
-# def cart():
-
-#     userid = session.get('userid', None)
-
-#     if not userid:
-#         flash("Please log in to view your cart", "btn-info")
-#         productid = session['lastviewedproduct']
-#         return redirect(f'/product/{productid}')
-
-
-#     # Retrieve all product ids that are in the cart session object, if any.
-#     try:
-#         productids = session['cart']
-#     except:
-#         productids = []
-
-#     products = []
-#     subtotal = 0
-
-#     # Get all product objects and derive other features
-#     for productid in productids:
-#         product = Product.query.get(productid)
-
-#         if product is None:
-#             productids = session['cart']
-#             productids.remove(productid)
-#             session['cart'] = productids
-#             continue                        # Go on to the next product
-
-#         products.append(product)
-#         subtotal += product.price
-#         session['cart_subtotal'] = subtotal
-
-#     return render_template('cart.html', products = products, subtotal = subtotal)
-
-
-# @app.route('/product/<int:productid>/addtocart', methods = ['POST'])
-# def addtocart(productid):
-
-#     userid = session.get('userid', None)
-
-#     if userid:                              # If user is logged in, then they can add to cart
-#         try:                                # Because we will have nothing in the cart initially, we'll just initialize it in the except block
-#             products = session['cart']
-#             products.append(productid)
-#             session['cart'] = products
-#         except:
-#             session['cart'] = [productid]
-
-#         flash('Added to Cart!', 'btn-success')
-
-#         return redirect(f'/product/{productid}')
-#     else:                                   # If not logged in, they get a message and redirect
-#         flash('Please login to add items to your cart', 'btn-danger')
-#         return redirect(f'/product/{productid}')
-
-
-# @app.route('/product/<int:productid>/removefromcart', methods = ['POST'])
-# def removefromcart(productid):
-
-#     try:                                    # If theres nothing to remove from the cart, then we don't need to do anything
-#         products = session['cart']
-#         products.remove(productid)
-#         session['cart'] = products
-#         flash('Removed from Cart!', 'btn-warning')
-#     except:
-#         flash('Not in Cart', 'btn-info')
-
-#     return redirect(f'/product/{productid}')
+#     flash('Product Deleted', 'btn-danger')
+#     return redirect(f'/user/{userid}')
 
 # ################################################################################################################################################

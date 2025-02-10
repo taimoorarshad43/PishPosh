@@ -45,10 +45,10 @@ def decodeimage(img_data):
 def getproductdescription(image_data, prompt=None):
 
     # We'll send our own custom message prompt or default to this one
+    message_data = prompt
+    
     if not prompt:
         message_data = "Give me a short product description for this picture that is a title of 5-12 words."
-
-    message_data = prompt
 
     """Function that takes base64 utf-8 image data and returns an image description from Mistral's AI"""
 

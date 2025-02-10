@@ -10,7 +10,7 @@ from mistraldescription import getproductdescription, encodeimage, decodeimage
 
 uploadroutes = Blueprint("uploadroutes", __name__)
 
-############################################################## Upload Routes #############################################################
+############################################################## Upload Routes #################################################################
 
 @uploadroutes.route('/upload/<int:userid>', methods = ['POST'])
 def pictureupload(userid):

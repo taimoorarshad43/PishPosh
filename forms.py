@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, PasswordField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, DecimalField, PasswordField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Length, NumberRange
+
 
 class SignUpForm(FlaskForm):
 
@@ -12,3 +15,11 @@ class LoginForm(FlaskForm):
 
     username = StringField("Username (required)")
     password = PasswordField("Password (required)")
+
+
+class ProductUploadForm(FlaskForm):
+    name = StringField('Product Name', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Description', validators=[DataRequired(), Length(max=500)])
+    price = DecimalField('Price ($)', validators=[DataRequired(), NumberRange(min=0)], places=2)
+    image = FileField('Product Image', validators=[DataRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+    submit = SubmitField('Add Product')

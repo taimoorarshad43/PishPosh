@@ -18,8 +18,8 @@ class LoginForm(FlaskForm):
 
 
 class ProductUploadForm(FlaskForm):
+    image = FileField('Product Image', validators=[DataRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     name = StringField('Product Name', validators=[DataRequired(), Length(max=100)])
     description = TextAreaField('Description', validators=[DataRequired(), Length(max=500)])
-    price = DecimalField('Price ($)', validators=[DataRequired(), NumberRange(min=0)], places=2)
-    image = FileField('Product Image', validators=[DataRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
-    submit = SubmitField('Add Product')
+    price = DecimalField('Price (USD)', validators=[DataRequired(), NumberRange(min=0)], places=2)
+    # submit = SubmitField('Add Product')

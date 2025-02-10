@@ -1,6 +1,6 @@
 from flask import Blueprint, session, render_template, redirect, flash
 from models import User, db
-from forms import SignUpForm, LoginForm
+from forms import SignUpForm, LoginForm, ProductUploadForm
 from sqlalchemy.exc import IntegrityError
 
 userroutes = Blueprint("userroutes", __name__)
@@ -24,6 +24,8 @@ def userdetail():
 
     userid = session.get('userid', None)
 
+    form = ProductUploadForm()
+
     if userid:
 
         user = User.query.get_or_404(session.get('userid', -1))     # Should only be able to get here if you are logged in
@@ -32,7 +34,7 @@ def userdetail():
         for product in user.products: # Get all user products to list on page
             userproducts.append(product)
 
-        return render_template('userdetail.html', user = user, products = userproducts)
+        return render_template('userdetail.html', user = user, products = userproducts, form = form)
     
     else:
 

@@ -4,6 +4,7 @@ from time import sleep
 from flask import Blueprint, session, render_template, redirect, flash, request, jsonify
 from PIL import Image
 
+from forms import ProductUploadForm
 from models import User, Product, db
 from mistraldescription import getproductdescription, encodeimage, decodeimage
 
@@ -15,36 +16,54 @@ uploadroutes = Blueprint("uploadroutes", __name__)
 @uploadroutes.route('/upload/<int:userid>', methods = ['POST'])
 def pictureupload(userid):
 
+    productform = ProductUploadForm()
+
     if session.get("userid", None) is None:
         flash('Please login to upload products', 'btn-info')
         return redirect('/')
 
-    try:
-        file = request.files['file']
-        productname = request.form['productname']
-        productdescription = request.form['productdescription']
-        productprice = request.form['productprice']
-        
-        # Generate new product and attach it to passed userid
-        product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
+    if productform.validate_on_submit(): # Handles our POST request for the form submission
+        try:
+            # file = request.files['file']
+            # productname = request.form['productname']
+            # productdescription = request.form['productdescription']
+            # productprice = request.form['productprice']
 
-        image = Image.open(file)
-        newsize = (200,200) # Resizing the image to be compact
-        image = image.resize(newsize)
-        stream = io.BytesIO()
-        image.save(stream, format = 'JPEG')         # Save the image as stream of bytes
-        file = stream.getvalue()
+            productname = productform.name.data                    # Refactoring to have WTForms handle the file submission
+            productdescription = productform.description.data
+            productprice = productform.price.data
+            file = productform.image.data
 
-        # Save the file as base64 encoding to its image filed in DB.
-        product.encode_image(file)
+            file_ext = file.filename.split('.')[-1]                # Check if the file is an image and if its in the accepted formats
+            print("File ext:", file_ext)
+            if file_ext not in ['jpg', 'jpeg', 'png']:
+                flash('Invalid File Type', 'btn-danger')
+                return redirect(f'/userdetail')
+            
+            # Generate new product and attach it to passed userid
+            product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
 
-        db.session.add(product)
-        db.session.commit()
+            image = Image.open(file)
+            newsize = (200,200)                         # Resizing the image to be compact
+            image = image.resize(newsize)
+            stream = io.BytesIO()
+            image.save(stream, format = file_ext.replace('.','').upper())         # Save the image as stream of bytes
+            file = stream.getvalue()
 
-    except Exception as e:                                          # If certain fields are missing, redirect to user detail with flashed message
-        print(e)
-        flash('Product Upload failed (check required fields)', 'btn-danger')
-        return redirect(f'/user/{userid}')
+            # Save the file as base64 encoding to its image filed in DB.
+            product.encode_image(file)
+
+            db.session.add(product)
+            db.session.commit()
+
+        except Exception as e:                                          # If certain fields are missing, redirect to user detail with flashed message
+            print(e)
+            flash('Product Upload failed (check required fields)', 'btn-danger')
+            productform.image.errors.append("Invalid File")
+            productform.name.errors.append("Invalid Name")
+            productform.description.errors.append("Invalid Description")
+            productform.price.errors.append("Invalid Price")
+            return redirect(f'/userdetail')
 
     flash('Product Listed Successfully', 'btn-success')
     return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.
@@ -95,3 +114,50 @@ def aiconfirm(userid):
     return render_template('aiconfirm.html', image=img_data_decoded, user=user, title=title, description=description)
 
 ##########################################################################################################################################
+
+
+
+
+
+
+
+
+
+################################# Temporary Back Up #######################################################################
+
+# @uploadroutes.route('/upload/<int:userid>', methods = ['POST'])
+# def pictureupload(userid):
+
+#     if session.get("userid", None) is None:
+#         flash('Please login to upload products', 'btn-info')
+#         return redirect('/')
+
+#     try:
+#         file = request.files['file']
+#         productname = request.form['productname']
+#         productdescription = request.form['productdescription']
+#         productprice = request.form['productprice']
+        
+#         # Generate new product and attach it to passed userid
+#         product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
+
+#         image = Image.open(file)
+#         newsize = (200,200) # Resizing the image to be compact
+#         image = image.resize(newsize)
+#         stream = io.BytesIO()
+#         image.save(stream, format = 'JPEG')         # Save the image as stream of bytes
+#         file = stream.getvalue()
+
+#         # Save the file as base64 encoding to its image filed in DB.
+#         product.encode_image(file)
+
+#         db.session.add(product)
+#         db.session.commit()
+
+#     except Exception as e:                                          # If certain fields are missing, redirect to user detail with flashed message
+#         print(e)
+#         flash('Product Upload failed (check required fields)', 'btn-danger')
+#         return redirect(f'/user/{userid}')
+
+#     flash('Product Listed Successfully', 'btn-success')
+#     return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.

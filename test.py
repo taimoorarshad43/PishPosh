@@ -1,22 +1,25 @@
 from unittest import TestCase
+from flask_sqlalchemy import SQLAlchemy
 
 from app import app
 from flask import session, jsonify
 
-from models import db, User, Product, connect_db
+from models import User, Product
+
+# Setting test database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pishposh_testing_db'     # TODO: Use an inmemory database like SQLite
+app.config['SQLALCHEMY_ECHO'] = False
 
 # Disable some of Flasks error behavior and disabling debugtoolbar. Disabling CSRF token.
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
 
-# Setting test database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pishposh_testing_db'     # Use an inmemory database like SQLite
-app.config['SQLALCHEMY_ECHO'] = False
-
+db = SQLAlchemy()
 
 with app.app_context():
-    connect_db(app)
+    db.app = app
+    db.init_app(app)
     db.drop_all()
     db.create_all()
 
@@ -70,8 +73,8 @@ class FlaskTests(TestCase):
         """
         Rolling back database
         """
-        with app.app_context():
-            db.session.rollback()
+        # with app.app_context():
+        #     db.session.rollback()
 
 
     def test_index(self):

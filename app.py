@@ -19,7 +19,8 @@ load_dotenv()                               # Load environmental variables
 app = Flask(__name__)
 app.json.sort_keys = False                  # Prevents Flask from sorting keys in API JSON responses.
 # app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///pishposh"                    # Can be used for testing
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///unittest_debugging_test"       # Debugging test, TODO: Delete
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SUPABASE_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = "seekrat"

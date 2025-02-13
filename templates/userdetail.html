@@ -41,7 +41,7 @@
                 </p>
 
                 {% endfor %}
-                <input class = "btn btn-primary mt-3" type="submit" value="Confirm?">
+                <input class = "submit-button btn btn-primary mt-3" type="submit" value="Confirm?">
             </form>
             <a class = "mb-3 text-primary" href = '/upload/{{user.id}}/ai'>Add AI description?</a>
         </div>
@@ -51,17 +51,8 @@
 
 {%endblock%}
 
+<script>
 
 
-<!-- <h2 class = 'mb-5'>Add New Product Listing?</h5>
-    <form action = "/upload/{{user.id}}" method="POST" enctype = "multipart/form-data">
-        <label class = "btn-primary mb-3" for = 'upload-file'>Upload Product Image</label><br>
-        <input class = 'upload-file text-center' type="file" name = "file"><br></br>
-        <label class = "btn-primary mb-3" for = 'upload-file'>Product Name</label>
-        <input type="text" name = "productname"><br></br>
-        <label class = "btn-primary mb-3" for = 'upload-file'>Product Description</label>
-        <input type="text" name = "productdescription"><span><a class = "ml-3 text-primary" href = '/upload/{{user.id}}/ai'>Add AI description?</a></span><br></br>
-        <label class = "btn-primary mb-3" for = 'upload-file'>Product Price</label>
-        <input type="text" name = "productprice"><br></br>
-        <input class = "btn btn-primary" type="submit" value="Confirm?">
-    </form> -->
+
+</script>

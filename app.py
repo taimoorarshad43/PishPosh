@@ -69,3 +69,8 @@ def home_page():
     products = Product.query.offset(pagination).limit(20).all() # Get a bunch of products to display on the homepage. TODO: Randomize order of products listed
 
     return render_template('index.html', products = products)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    print(e)
+    return render_template('404.html'), 404

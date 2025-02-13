@@ -62,10 +62,6 @@ def pictureupload(userid):
                 session['ProductPriceError'] = 'Invalid Product Price'
             print(e)
             flash('Product Upload failed (check required fields)', 'btn-danger')
-            # productform.image.errors.append("Invalid File")
-            # productform.name.errors.append("Invalid Name")
-            # productform.description.errors.append("Invalid Description")
-            # productform.price.errors.append("Invalid Price")
             return redirect(f'/userdetail')
 
     print("If condition failed")

@@ -11,7 +11,7 @@ app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
 
 # Setting test database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pishposh_testing_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pishposh_testing_db'     # Use an inmemory database like SQLite
 app.config['SQLALCHEMY_ECHO'] = False
 
 

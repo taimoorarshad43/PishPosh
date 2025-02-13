@@ -24,22 +24,19 @@ def pictureupload(userid):
 
     if productform.validate_on_submit(): # Handles our POST request for the form submission
         try:
-            # file = request.files['file']
-            # productname = request.form['productname']
-            # productdescription = request.form['productdescription']
-            # productprice = request.form['productprice']
-
             productname = productform.name.data                    # Refactoring to have WTForms handle the file submission
             productdescription = productform.description.data
             productprice = productform.price.data
             file = productform.image.data
 
             file_ext = file.filename.split('.')[-1]                # Check if the file is an image and if its in the accepted formats
-            print("File ext:", file_ext)
+            print("File ext: ", file_ext)
             if file_ext not in ['jpg', 'jpeg', 'png']:
-                flash('Invalid File Type', 'btn-danger')
-                return redirect(f'/userdetail')
-            
+                session['ProductFileError'] = 'Invalid File Type'          # If invalid file type, we'll add an error to session and display it after a redirect
+            else:
+                if file_ext == 'jpg':
+                    file_ext = 'jpeg'
+
             # Generate new product and attach it to passed userid
             product = Product(productname = productname, productdescription = productdescription, price = productprice, user_id = userid)
 
@@ -47,7 +44,7 @@ def pictureupload(userid):
             newsize = (200,200)                         # Resizing the image to be compact
             image = image.resize(newsize)
             stream = io.BytesIO()
-            image.save(stream, format = file_ext.replace('.','').upper())         # Save the image as stream of bytes
+            image.save(stream, format = file_ext.replace('.','').upper())         # Save the image as stream of bytes 
             file = stream.getvalue()
 
             # Save the file as base64 encoding to its image filed in DB.
@@ -57,14 +54,21 @@ def pictureupload(userid):
             db.session.commit()
 
         except Exception as e:                                          # If certain fields are missing, redirect to user detail with flashed message
+            if not productname or productname.replace("-","").isdigit() == True:
+                session['ProductNameError'] = 'Invalid Product Name'
+            if not productdescription or productname.replace("-","").isdigit() == True:
+                session['ProductDescriptionError'] = 'Invalid Product Description'
+            if not productprice:
+                session['ProductPriceError'] = 'Invalid Product Price'
             print(e)
             flash('Product Upload failed (check required fields)', 'btn-danger')
-            productform.image.errors.append("Invalid File")
-            productform.name.errors.append("Invalid Name")
-            productform.description.errors.append("Invalid Description")
-            productform.price.errors.append("Invalid Price")
+            # productform.image.errors.append("Invalid File")
+            # productform.name.errors.append("Invalid Name")
+            # productform.description.errors.append("Invalid Description")
+            # productform.price.errors.append("Invalid Price")
             return redirect(f'/userdetail')
 
+    print("If condition failed")
     flash('Product Listed Successfully', 'btn-success')
     return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.
 

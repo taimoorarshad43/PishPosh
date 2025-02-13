@@ -24,7 +24,7 @@ def userdetail():
 
     userid = session.get('userid', None)
 
-    form = ProductUploadForm()
+    productform = ProductUploadForm()
 
     if userid:
 
@@ -34,7 +34,15 @@ def userdetail():
         for product in user.products: # Get all user products to list on page
             userproducts.append(product)
 
-        return render_template('userdetail.html', user = user, products = userproducts, form = form)
+        # Adding errors from the '/upload/userid' route to this form after a redirect
+        # We need to validate the form object to do this
+        productform.validate()
+        productform.image.errors.append(session.pop("ProductFileError", ""))
+        productform.name.errors.append(session.pop("ProductNameError", ""))
+        productform.description.errors.append(session.pop("ProductDescriptionError", ""))
+        productform.price.errors.append(session.pop("ProductPriceError", ""))
+
+        return render_template('userdetail.html', user = user, products = userproducts, form = productform)
     
     else:
 

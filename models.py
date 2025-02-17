@@ -8,7 +8,7 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 
 
-def connect_db(app, db_uri):
+def connect_db(app, db_uri):                        # Inits the app context with supplied db_uri
     """Connect to database."""
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri

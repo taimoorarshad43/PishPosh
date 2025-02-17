@@ -1,5 +1,4 @@
 from unittest import TestCase
-# from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
 from flask import session, jsonify
@@ -37,13 +36,6 @@ app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
 
-# # db = SQLAlchemy()
-
-# with app.app_context():
-#     db.app = app
-#     db.init_app(app)
-#     db.drop_all()
-#     db.create_all()
 
 class FlaskTests(TestCase):
 

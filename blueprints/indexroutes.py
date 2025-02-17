@@ -34,7 +34,7 @@ def home_page():
 
     return render_template('index.html', products = products)
 
-@indexroutes.app_errorhandler(404)
+@indexroutes.app_errorhandler(404)                      # Uses .app_errorhandler because regular error handlers only latch onto blueprints and not entire app
 def page_not_found(e):
     print(e)
     return render_template('404.html'), 404

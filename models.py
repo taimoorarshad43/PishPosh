@@ -8,8 +8,10 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 
 
-def connect_db(app):
+def connect_db(app, db_uri):
     """Connect to database."""
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 
     db.app = app
     db.init_app(app)

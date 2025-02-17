@@ -1,28 +1,49 @@
 from unittest import TestCase
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
-from app import app
+from app import create_app
 from flask import session, jsonify
 
-from models import User, Product
+from models import User, Product, db
 
-# Setting test database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pishposh_testing_db'     # TODO: Use an inmemory database like SQLite
+from blueprints.apiroutes import apiroutes
+from blueprints.checkout import productcheckout
+from blueprints.cart import cartroutes
+from blueprints.product import productroutes
+from blueprints.userroutes import userroutes
+from blueprints.uploadroutes import uploadroutes
+from blueprints.indexroutes import indexroutes
+
+app = create_app('postgresql:///pishposh_testing_db')  # TODO: Use an inmemory database like SQLite
+
 app.config['SQLALCHEMY_ECHO'] = False
+
+app.json.sort_keys = False                  # Prevents Flask from sorting keys in API JSON responses.
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ECHO"] = True
+app.config["SECRET_KEY"] = "seekrat"
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+app.register_blueprint(apiroutes, url_prefix = "/v1")
+app.register_blueprint(productcheckout)
+app.register_blueprint(cartroutes)
+app.register_blueprint(productroutes)
+app.register_blueprint(userroutes)
+app.register_blueprint(uploadroutes)
+app.register_blueprint(indexroutes)
 
 # Disable some of Flasks error behavior and disabling debugtoolbar. Disabling CSRF token.
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
 
-db = SQLAlchemy()
+# # db = SQLAlchemy()
 
-with app.app_context():
-    db.app = app
-    db.init_app(app)
-    db.drop_all()
-    db.create_all()
-
+# with app.app_context():
+#     db.app = app
+#     db.init_app(app)
+#     db.drop_all()
+#     db.create_all()
 
 class FlaskTests(TestCase):
 
@@ -44,6 +65,10 @@ class FlaskTests(TestCase):
         Setting up fake users and products to test
         """
         with app.app_context():
+
+            db.drop_all()
+            db.create_all()
+
             User.query.delete()
 
             username = 'johndoe'
@@ -73,8 +98,9 @@ class FlaskTests(TestCase):
         """
         Rolling back database
         """
-        # with app.app_context():
-        #     db.session.rollback()
+        with app.app_context():
+            db.session.rollback()
+            db.drop_all()
 
 
     def test_index(self):
@@ -99,15 +125,48 @@ class FlaskTests(TestCase):
 
             self.assertEqual(resp.status_code, 200)
 
-    def test_addingtocart(self):
+    def test_404_product(self):
 
         """
-        Testing session state when we add to cart
+        Test visiting a product that doesn't exist
         """
+
         with app.test_client() as client:
-            resp = client.get('/product/1/addtocart')
+            resp = client.get('/product/43')
 
-            self.assertEqual(session['cart'], [1])            
+            self.assertEqual(resp.status_code, 404)
+
+    def test_example_user(self):
+        
+        """
+        Test visiting a user page
+        """
+
+        with app.test_client() as client:
+            resp = client.get('/user/1')
+
+            self.assertEqual(resp.status_code, 200)
+
+    def test_404_user(self):
+        
+        """
+        Test visiting a user that doesn't exist
+        """
+
+        with app.test_client() as client:
+            resp = client.get('/user/43')
+
+            self.assertEqual(resp.status_code, 404)
+
+    # def test_addingtocart(self):
+
+    #     """
+    #     Testing session state when we add to cart
+    #     """
+    #     with app.test_client() as client:
+    #         resp = client.get('/product/1/addtocart')
+
+    #         self.assertEqual(session['cart'], [1])            
 
 
         

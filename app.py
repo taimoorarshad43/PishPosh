@@ -37,8 +37,8 @@ def create_app(db_uri):
     return app
 
 # db_uri = os.environ.get("SUPABASE_DATABASE_URI")
-db_uri = "postgresql:///pishposh"
-# db_uri = "postgresql:///unittest_debugging_test"
+# db_uri = "postgresql:///pishposh"
+db_uri = "postgresql:///unittest_debugging_test"
 
 app = create_app(db_uri)
 

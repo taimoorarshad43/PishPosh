@@ -256,7 +256,7 @@ class FlaskTests(TestCase):
 
             self.assertEqual(resp.location, '/userdetail')
 
-    def test_uploadingproduct_fail(self):                       # Testing to see if we get the right error when a product upload fails
+    def test_uploadingproduct_fail_errormsg(self):                       # Testing to see if we get the right error when a product upload fails
         
         """
         Testing uploading a product and failing. We then see if we get a form error

@@ -291,10 +291,21 @@ class FlaskTests(TestCase):
         with app.test_client() as client:
             resp = client.get('/v1/users')              # Should return a JSON
 
-            print(resp.json)
-
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json["Users"][0]["username"], 'johndoe')
+
+
+    def test_APIgetallproducts(self):
+        
+        """
+        Testing the API route to get all products
+        """
+
+        with app.test_client() as client:
+            resp = client.get('/v1/products')              # Should return a JSON
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json["Products"][0]["productname"], 'Product Name')
 
         
 

@@ -64,7 +64,6 @@ def pictureupload(userid):
             flash('Product Upload failed (check required fields)', 'btn-danger')
             return redirect(f'/userdetail')
 
-    print("If condition failed")
     flash('Product Listed Successfully', 'btn-success')
     return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.
 

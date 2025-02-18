@@ -274,14 +274,27 @@ class FlaskTests(TestCase):
             data = {'name': 'New uploaded Product', 'description': 
                                                     'Product for testing purposes', 'price': '25'}
             data['image'] = (io.BytesIO(base64.b64decode(SMALLEST_JPEG_B64)), 'test.jpeg')
-            print("data is: ", data)
             resp = client.post('/upload/1', data = data, follow_redirects = True, content_type='multipart/form-data')
             html = resp.get_data(as_text = True)
-            print(html)
             
             product = Product.query.filter_by(productname = 'New uploaded Product').first()
 
-            self.assertEquals(product.productname, 'New uploaded Product')
+            self.assertEqual(product.productname, 'New uploaded Product')
+            self.assertIn('Product Listed Successfully', html)
+
+    def test_APIgetallusers(self):
+        
+        """
+        Testing the API route to get all users
+        """
+
+        with app.test_client() as client:
+            resp = client.get('/v1/users')              # Should return a JSON
+
+            print(resp.json)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json["Users"][0]["username"], 'johndoe')
 
         
 

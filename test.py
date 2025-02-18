@@ -51,7 +51,6 @@ class FlaskTests(TestCase):
         Does app response with certain features intact?
 
     """
-    # TODO -- write tests for every view function / feature!
 
     def setUp(self):
         
@@ -111,24 +110,28 @@ class FlaskTests(TestCase):
     def test_example_products(self):
         
         """
-        Test visiting a product page
+        Test visiting a product page and testing that we get the right product name
         """
 
         with app.test_client() as client:
             resp = client.get('/product/1')
+            html = resp.get_data(as_text = True)
 
             self.assertEqual(resp.status_code, 200)
+            self.assertIn('Product Name', html)
 
     def test_404_product(self):
 
         """
-        Test visiting a product that doesn't exist
+        Test visiting a product that doesn't exist and making sure we get our 404 page
         """
 
         with app.test_client() as client:
             resp = client.get('/product/43')
+            html = resp.get_data(as_text = True)
 
             self.assertEqual(resp.status_code, 404)
+            self.assertIn('Page Not Found', html)
 
     def test_example_user(self):
         
@@ -225,6 +228,18 @@ class FlaskTests(TestCase):
             client.get('/logout')
 
             self.assertNotIn('userid', session)
+
+    def test_faileduserdetail(self):                            # We should be redirected if this happens
+        
+        """
+        Testing to see if we get redirected if we try to access a user detail page without being logged in
+        """
+
+        with app.test_client() as client:
+            resp = client.get('/userdetail')
+
+            self.assertEqual(resp.status_code, 302)
+
 
     def test_uploadingproduct_fail(self):                       # Testing to see if we get the right redirect location when a product upload fails
         

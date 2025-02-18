@@ -306,16 +306,3 @@ class FlaskTests(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json["Products"][0]["productname"], 'Product Name')
-
-        
-
-    # def test_words(self):
-    #     with app.test_client() as client:
-    #         with client.session_transaction() as change_session:
-    #             boggle_game = Boggle()
-    #             board = boggle_game.make_board()
-    #             change_session['board'] = board
-                
-    #         resp = client.get(f"/guess?guess='cat'")
-    #         self.assertIn(resp.json[0], ['ok', 'not-word'])
-

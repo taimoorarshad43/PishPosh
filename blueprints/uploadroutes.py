@@ -13,7 +13,7 @@ uploadroutes = Blueprint("uploadroutes", __name__)
 
 ############################################################## Upload Routes #################################################################
 
-@uploadroutes.route('/upload/<int:userid>', methods = ['POST'])
+@uploadroutes.route('/upload/<int:userid>', methods = ['POST'])                 # Route to upload a product, tied to a user
 def pictureupload(userid):
 
     productform = ProductUploadForm()

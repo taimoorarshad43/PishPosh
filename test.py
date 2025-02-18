@@ -1,7 +1,9 @@
+import io
 from unittest import TestCase
+import base64
 
 from app import create_app
-from flask import session, jsonify
+from flask import session
 
 from models import User, Product, db
 
@@ -88,7 +90,7 @@ class FlaskTests(TestCase):
     def tearDown(self):
 
         """
-        Rolling back database
+        Rolling back database, dropping all tables
         """
         with app.app_context():
             db.session.rollback()
@@ -150,16 +152,136 @@ class FlaskTests(TestCase):
 
             self.assertEqual(resp.status_code, 404)
 
-    # def test_addingtocart(self):
+    def test_addingtocart(self):
 
-    #     """
-    #     Testing session state when we add to cart
-    #     """
-    #     with app.test_client() as client:
-    #         resp = client.get('/product/1/addtocart')
+        """
+        Testing session state when we add to cart
+        """
 
-    #         self.assertEqual(session['cart'], [1])            
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['userid'] = 1                    # We'll set the user id to 1 to simulate a logged in user
+            client.post('/product/1/addtocart')
 
+            self.assertEqual(session['cart'], [1])
+
+    def test_next_page(self):                                   # Testing to see if next page route changes session state appropriately
+
+        """
+        Testing the next page feature
+        """
+
+        with app.test_client() as client:
+            client.get('/?page=next')
+
+            self.assertEqual(session['page'], 1)
+
+    def test_previous_page(self):
+
+        """
+        Testing the previous page feature
+        """
+
+        with app.test_client() as client:                       # Testing to see if previous page route changes session state appropriately
+            with client.session_transaction() as change_session:
+                change_session['page'] = 1
+            client.get('/?page=previous')
+
+            self.assertEqual(session['page'], 0)
+
+    def test_signingup(self):                                   # Testing to see if signing up a user works and we have a database entry
+        
+        """
+        Testing signing up a regular user account
+        """
+
+        with app.test_client() as client:
+            client.post('/signup', data = {'username': 'janedoe', 'password': 'password', 'firstname': 'Jane', 'lastname': 'Doe'})
+            
+            user = User.query.filter_by(username = 'janedoe').first()
+            
+            self.assertEqual(user.id, 2)
+
+    def test_loggingin(self):                                   # Testing to see if logging in a user works and we have a session entry of their user id (of 1)
+
+        """
+        Testing logging in a regular user account
+        """
+
+        with app.test_client() as client:
+            client.post('/login', data = {'username': 'johndoe', 'password': 'password'})
+
+            self.assertEqual(session['userid'], 1)
+
+    def test_loggingout(self):                                  # Testing to see if logging out a user works and we have no session entry of their user id
+
+        """
+        Testing logging out a regular user account
+        """
+
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['userid'] = 1
+            client.get('/logout')
+
+            self.assertNotIn('userid', session)
+
+    def test_uploadingproduct_fail(self):                       # Testing to see if we get the right redirect location when a product upload fails
+        
+        """
+        Testing uploading a product and failing. We then see if we get a form error
+        """
+
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['userid'] = 1
+            resp = client.post('/upload/1', data = {'productname': 'New uploaded Product', 'productdescription': 
+                                                    'Product for testing purposes', 'price': 25, 'file': 'test.jpg'})
+            data = resp.get_data(as_text = True)
+
+            self.assertEqual(resp.location, '/userdetail')
+
+    def test_uploadingproduct_fail(self):                       # Testing to see if we get the right error when a product upload fails
+        
+        """
+        Testing uploading a product and failing. We then see if we get a form error
+        """
+
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['userid'] = 1
+            resp = client.post('/upload/1', data = {'productname': 'New uploaded Product', 'productdescription': 
+                                                    'Product for testing purposes', 'price': '25', 'file': 'test.jpg'}, follow_redirects = True)
+            data = resp.get_data(as_text = True)
+
+            self.assertIn('Product Upload failed', data)
+
+    def test_uploadingproduct_success(self):                    # Testing to see if we can get a product uploaded
+
+        """
+        Testing uploading a product and succeeding
+        """
+
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['userid'] = 1
+
+            SMALLEST_JPEG_B64 = """\
+            /9j/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8Q
+            EBEQCgwSExIQEw8QEBD/yQALCAABAAEBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=
+            """
+
+            data = {'name': 'New uploaded Product', 'description': 
+                                                    'Product for testing purposes', 'price': '25'}
+            data['image'] = (io.BytesIO(base64.b64decode(SMALLEST_JPEG_B64)), 'test.jpeg')
+            print("data is: ", data)
+            resp = client.post('/upload/1', data = data, follow_redirects = True, content_type='multipart/form-data')
+            html = resp.get_data(as_text = True)
+            print(html)
+            
+            product = Product.query.filter_by(productname = 'New uploaded Product').first()
+
+            self.assertEquals(product.productname, 'New uploaded Product')
 
         
 

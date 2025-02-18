@@ -18,7 +18,7 @@ def gen_names(filename):
     names = []
     with open(filename, 'r') as file:
         for line in file:
-            name = line.strip() #get rid of whitespace
+            name = line.strip() # get rid of whitespace
 
             if name:
                 names.append(name)

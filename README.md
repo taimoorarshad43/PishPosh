@@ -15,7 +15,57 @@ Better randomized products
 ## Page Overview
 
 
+#### Running instructions
 
+Run the following commands and set ups.
+
+Clone the repo into your machine.
+
+```
+$ git clone git@github.com:taimoorarshad43/PishPosh.git
+```
+
+Additionally, you'll need to set up Mistral and Stripe API accounts to run AI product descriptions and simulate processing payments.
+
+You'll also need a cloud or local relational database to store product information.
+
+The crendentials and API keys for those should be stored in a .env file that the PishPosh application will look for when starting up.
+The .env file has the following fields to be filed out. The **SUPABASE_DATABASE_URI** can be any relational database of your choosing as long as it's compatible with SQLAlchemy.
+
+**SUPABASE_DATABASE_URI**
+**STRIPE_TEST_API_KEY**
+**MISTRAL_API_KEY**
+
+Refer to the below links for documentation on Mistral and Stripe to set up dev accounts and generate API keys
+
+[Mistral Documentation][https://docs.mistral.ai/api/]
+
+[Stripe][https://docs.stripe.com/keys]
+
+
+
+After you've cloned the repo, you'll need to set up a virtual environment and install requirements.
+
+You can do that with the following Python module.
+```
+$ python3 -m venv venv
+```
+Activate the Python virtual environment and run pip install.
+```
+$ source venv/bin/activate
+```
+```
+$ pip install -r requirements.txt
+```
+After installing requirments and setting up your .env file. You can locally run PishPosh with the following command.
+```
+$ flask run
+```
+
+If you want to seed the database with random products, you can do so with the seedfile as so. Within your virtual environment, run the following.
+```
+$ python3 seedfile.py
+```
 #### All Pages
 
 All pages will have a navbar that takes the user to the homepage. They will also allow a user to log in and out as well as sign up.

@@ -33,7 +33,9 @@ The crendentials and API keys for those should be stored in a .env file that the
 The .env file has the following fields to be filed out. The **SUPABASE_DATABASE_URI** can be any relational database of your choosing as long as it's compatible with SQLAlchemy.
 
 **SUPABASE_DATABASE_URI**
+
 **STRIPE_TEST_API_KEY**
+
 **MISTRAL_API_KEY**
 
 Refer to the below links for documentation on Mistral and Stripe to set up dev accounts and generate API keys

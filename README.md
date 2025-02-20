@@ -66,6 +66,9 @@ If you want to seed the database with random products, you can do so with the se
 ```
 $ python3 seedfile.py
 ```
+
+
+
 #### All Pages
 
 All pages will have a navbar that takes the user to the homepage. They will also allow a user to log in and out as well as sign up.

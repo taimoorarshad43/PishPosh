@@ -38,9 +38,9 @@ The .env file has the following fields to be filed out. The **SUPABASE_DATABASE_
 
 Refer to the below links for documentation on Mistral and Stripe to set up dev accounts and generate API keys
 
-[Mistral Documentation][https://docs.mistral.ai/api/]
+[Mistral Documentation](https://docs.mistral.ai/api/)
 
-[Stripe][https://docs.stripe.com/keys]
+[Stripe](https://docs.stripe.com/keys)
 
 
 

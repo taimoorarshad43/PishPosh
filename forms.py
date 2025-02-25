@@ -18,15 +18,7 @@ class LoginForm(FlaskForm):
 
 
 class ProductUploadForm(FlaskForm):
-    # image = FileField('Product Image', validators=[DataRequired(), FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
     image = FileField('Product Image', validators=[DataRequired(''),])
     name = StringField('Product Name', validators=[DataRequired(''), Length(max=100)])
     description = TextAreaField('Description', validators=[DataRequired(''), Length(max=500)])
-    price = DecimalField('Price (USD)', validators=[DataRequired(''), NumberRange(min=0)], places=2)
-    # submit = SubmitField('Confirm?')
-
-    # image = FileField('Product Image')
-    # name = StringField('Product Name')
-    # description = TextAreaField('Description')
-    # price = DecimalField('Price (USD)')
-    # submit = SubmitField('Confirm?')
+    price = DecimalField('Price (USD)', validators=[DataRequired(''), NumberRange(min=0)], places=2)    

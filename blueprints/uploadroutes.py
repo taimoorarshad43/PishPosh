@@ -63,19 +63,22 @@ def pictureupload(userid):
             print(e)
             flash('Product Upload failed (check required fields)', 'btn-danger')
             return redirect(f'/userdetail')
-
+        
+    print("if condition failed")
     flash('Product Listed Successfully', 'btn-success')
     return redirect(f'/user/{userid}')                          # After success, redirect to their user page with their products.
 
 @uploadroutes.route('/upload/<int:userid>/ai')
 def uploadai(userid):
 
+    aiform = ProductUploadForm()
+
     if session.get("userid", None) is None:
         flash('Please login to upload products', 'btn-info')
         return redirect('/')
 
     user = User.query.get_or_404(userid)
-    return render_template('aiupload.html', user=user)
+    return render_template('aiupload.html', user=user, form=aiform)
 
 @uploadroutes.route('/upload/aiprocess', methods = ['POST'])
 def aiprocess():
